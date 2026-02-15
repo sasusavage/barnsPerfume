@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import ProductCard, { type ColorVariant, getColorHex } from '@/components/ProductCard';
 import ProductCardSkeleton from '@/components/skeletons/ProductCardSkeleton';
 import AnimatedSection, { AnimatedGrid } from '@/components/AnimatedSection';
+import NewsletterSection from '@/components/NewsletterSection';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function Home() {
@@ -330,6 +331,8 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Newsletter - Homepage Only */}
+      <NewsletterSection />
 
     </main>
   );
