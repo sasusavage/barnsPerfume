@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { useCMS } from '@/context/CMSContext';
 
 export default function AdminLayout({
   children,
@@ -21,6 +22,8 @@ export default function AdminLayout({
 
   // Module Filtering State
   const [enabledModules, setEnabledModules] = useState<string[]>([]);
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || 'MultiMey';
 
   useEffect(() => {
     async function checkAuth() {
@@ -296,7 +299,7 @@ export default function AdminLayout({
       >
         <div className="h-full px-4 py-6 overflow-y-auto">
           <Link href="/admin" className="flex items-center mb-8 px-2 cursor-pointer">
-            <span className="text-xl font-['Pacifico'] text-blue-700">MultiMey</span>
+            <span className="text-xl font-['Pacifico'] text-blue-700">{siteName}</span>
             <span className="ml-3 text-sm font-semibold text-gray-500">ADMIN</span>
           </Link>
 

@@ -76,10 +76,11 @@ export default function Header() {
                 </button>
                 <Link
                   href="/"
-                  className="flex items-center select-none"
+                  className="flex items-center select-none gap-3"
                   aria-label="Go to homepage"
                 >
                   <img src={siteLogo} alt={siteName} className="h-9 md:h-11 w-auto object-contain" />
+                  <span className="hidden sm:block text-xl md:text-2xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
                 </Link>
               </div>
 
@@ -212,8 +213,9 @@ export default function Header() {
           />
           <div className="absolute top-0 left-0 bottom-0 w-4/5 max-w-xs bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
                 <img src={siteLogo} alt={siteName} className="h-8 w-auto object-contain" />
+                <span className="text-xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
