@@ -8,13 +8,18 @@ import ProductCard, { type ColorVariant, getColorHex } from '@/components/Produc
 import ProductCardSkeleton from '@/components/skeletons/ProductCardSkeleton';
 import AnimatedSection, { AnimatedGrid } from '@/components/AnimatedSection';
 import NewsletterSection from '@/components/NewsletterSection';
+import { useCMS } from '@/context/CMSContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function Home() {
   usePageTitle('');
+  const { getSetting } = useCMS();
+  const logo = getSetting('site_logo');
+
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [heroBanners, setHeroBanners] = useState<any[]>([]);
 
   // Config State - Managed in Code
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -57,6 +62,26 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // Fetch Banners
+        const { data: bannersData } = await supabase
+          .from('banners')
+          .select('*')
+          .eq('position', 'hero')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true });
+
+        if (bannersData) {
+          setHeroBanners(bannersData.map(b => ({
+            image: b.image_url,
+            media_type: b.media_type,
+            tag: b.name,
+            heading: b.title,
+            subtext: b.subtitle,
+            cta: { text: b.button_text, href: b.button_url },
+            cta2: { text: 'View All', href: '/shop' }
+          })));
+        }
+
         // Fetch featured products directly from Supabase
         const { data: productsData, error: productsError } = await supabase
           .from('products')
@@ -93,10 +118,9 @@ export default function Home() {
     fetchData();
   }, []);
 
-
   const getHeroImage = () => {
     if (config.hero.backgroundImage) return config.hero.backgroundImage;
-    return "/logo.png";
+    return logo || "/logo.png";
   };
 
   const renderBanners = () => {
@@ -124,85 +148,88 @@ export default function Home() {
       <section className="relative w-full h-[70vh] md:h-[90vh] overflow-hidden bg-black">
 
         {/* Background Slider + Per-Slide Content */}
-        {[
-          {
-            image: '/hero-1.png',
-            tag: 'Electronics & Appliances',
-            heading: <>Top-Quality <br /><span className="italic font-light">Electronics & Gadgets</span></>,
-            subtext: 'From smart kitchen appliances to everyday electronics — imported directly and priced to move.',
-            cta: { text: 'Shop Electronics', href: '/shop?category=electronics' },
-            cta2: { text: 'View All', href: '/shop' },
-          },
-          {
-            image: '/hero-2.png',
-            tag: 'Fashion & Dresses',
-            heading: <>Stunning African <br /><span className="italic font-light">Print Dresses</span></>,
-            subtext: 'Beautiful locally sourced dresses and fashion pieces — bold prints, perfect fits, unbeatable prices.',
-            cta: { text: 'Shop Dresses', href: '/shop?category=dresses' },
-            cta2: { text: 'All Fashion', href: '/shop?category=fashion' },
-          },
-        ].map((slide, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-          >
-            {/* Background Image */}
-            <Image
-              src={slide.image}
-              alt={`Hero Banner ${index + 1}`}
-              fill
-              className="object-cover"
-              priority={index === 0}
-              quality={90}
-            />
-            <div className="absolute inset-0 bg-black/20"></div> {/* 20% black overlay */}
+        {/* Background Slider + Per-Slide Content */}
+        {heroBanners.length > 0 ? (
+          heroBanners.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+            >
+              {/* Background Media */}
+              {slide.media_type === 'video' ? (
+                <video
+                  src={slide.image}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              ) : (
+                <Image
+                  src={slide.image || '/hero-1.png'}
+                  alt={`Hero Banner ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                  quality={90}
+                />
+              )}
 
-            {/* Slide Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
-              <p
-                key={`tag-${currentSlide}`}
-                className="text-white/90 text-sm md:text-base tracking-[0.2em] uppercase font-medium mb-6 animate-fade-in-up"
-              >
-                {slide.tag}
-              </p>
+              <div className="absolute inset-0 bg-black/20"></div> {/* 20% black overlay */}
 
-              <h1
-                key={`heading-${currentSlide}`}
-                className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-tight drop-shadow-lg animate-fade-in-up"
-                style={{ animationDelay: '0.1s' }}
-              >
-                {slide.heading}
-              </h1>
-
-              <p
-                key={`sub-${currentSlide}`}
-                className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 font-light tracking-wide animate-fade-in-up"
-                style={{ animationDelay: '0.2s' }}
-              >
-                {slide.subtext}
-              </p>
-
-              <div
-                key={`cta-${currentSlide}`}
-                className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 animate-fade-in-up"
-                style={{ animationDelay: '0.3s' }}
-              >
-                <Link
-                  href={slide.cta.href}
-                  className="bg-white text-gray-900 px-8 py-3 sm:px-10 sm:py-4 rounded-full font-medium text-base sm:text-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl hover:-translate-y-1 duration-300"
+              {/* Slide Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
+                <p
+                  key={`tag-${currentSlide}`}
+                  className="text-white/90 text-sm md:text-base tracking-[0.2em] uppercase font-medium mb-6 animate-fade-in-up"
                 >
-                  {slide.cta.text}
-                </Link>
-                <Link
-                  href={slide.cta2.href}
-                  className="px-8 py-3 sm:px-10 sm:py-4 rounded-full font-medium text-base sm:text-lg text-white border border-white/40 hover:bg-white/10 transition-colors backdrop-blur-sm"
+                  {slide.tag}
+                </p>
+
+                <h1
+                  key={`heading-${currentSlide}`}
+                  className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-tight drop-shadow-lg animate-fade-in-up"
+                  style={{ animationDelay: '0.1s' }}
                 >
-                  {slide.cta2.text}
-                </Link>
+                  {slide.heading}
+                </h1>
+
+                <p
+                  key={`sub-${currentSlide}`}
+                  className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 font-light tracking-wide animate-fade-in-up"
+                  style={{ animationDelay: '0.2s' }}
+                >
+                  {slide.subtext}
+                </p>
+
+                <div
+                  key={`cta-${currentSlide}`}
+                  className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 animate-fade-in-up"
+                  style={{ animationDelay: '0.3s' }}
+                >
+                  <Link
+                    href={slide.cta.href || '/shop'}
+                    className="bg-white text-gray-900 px-8 py-3 sm:px-10 sm:py-4 rounded-full font-medium text-base sm:text-lg hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl hover:-translate-y-1 duration-300"
+                  >
+                    {slide.cta.text}
+                  </Link>
+                  <Link
+                    href={slide.cta2.href}
+                    className="px-8 py-3 sm:px-10 sm:py-4 rounded-full font-medium text-base sm:text-lg text-white border border-white/40 hover:bg-white/10 transition-colors backdrop-blur-sm"
+                  >
+                    {slide.cta2.text}
+                  </Link>
+                </div>
               </div>
             </div>
+          ))
+        ) : (
+          // Fallback/Loading State
+          <div className="absolute inset-0 bg-black flex items-center justify-center">
+            <div className="text-white">Loading...</div>
           </div>
-        ))}
+        )}
 
         {/* Bottom Features (Desktop) */}
         <div className="absolute bottom-12 left-0 right-0 z-20 hidden md:flex justify-center items-center gap-16 text-white text-center">
@@ -261,7 +288,7 @@ export default function Home() {
                   />
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
-                  
+
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end h-full">
                     <h3 className="font-serif font-bold text-white text-xl md:text-2xl mb-1 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{category.name}</h3>

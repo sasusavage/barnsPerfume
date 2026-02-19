@@ -33,7 +33,7 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
         onClick={onClose}
       ></div>
 
-      <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col slide-in-right">
+      <div className="fixed top-0 right-0 h-[100dvh] w-full max-w-md bg-white shadow-2xl z-50 flex flex-col slide-in-right">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-bold text-gray-900">
             Shopping Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)})

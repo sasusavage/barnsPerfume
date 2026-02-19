@@ -10,8 +10,9 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
+  const [statusFilter, setStatusFilter] = useState('all_active');
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
 
   // Statistics
@@ -31,7 +32,7 @@ export default function ProductsPage() {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-  }, [sortBy]);
+  }, [sortBy, statusFilter]);
 
   const fetchCategories = async () => {
     const { data } = await supabase.from('categories').select('name');
@@ -49,6 +50,13 @@ export default function ProductsPage() {
           product_variants(count),
           product_images(url, position)
         `);
+
+      // Apply Filters
+      if (statusFilter === 'all_active') {
+        query = query.neq('status', 'archived');
+      } else if (statusFilter !== 'all') {
+        query = query.eq('status', statusFilter);
+      }
 
       // Apply sorting
       if (sortBy === 'newest') query = query.order('created_at', { ascending: false });
@@ -77,7 +85,9 @@ export default function ProductsPage() {
 
         setProducts(transformedProducts);
 
-        // Calculate stats locally for now (better to do count queries in production)
+        // Fetch stats separately to include archived items in total counts if needed?
+        // Actually, for simplicity, let's just keep the local stats based on the view, 
+        // OR ideally fetch precise counts from DB. For now, local is fine as it reflects the current view.
         setStats({
           total: transformedProducts.length,
           lowStock: transformedProducts.filter(p => p.quantity < (p.metadata?.low_stock_threshold || 5) && p.quantity > 0).length,
@@ -109,26 +119,34 @@ export default function ProductsPage() {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      const { error } = await supabase.from('products').delete().eq('id', productId);
+    if (confirm('Are you sure you want to archive this product?')) {
+      const { error } = await supabase
+        .from('products')
+        .update({ status: 'archived' })
+        .eq('id', productId);
+
       if (!error) {
         setProducts(products.filter(p => p.id !== productId));
-        alert('Product deleted successfully');
+        alert('Product archived successfully');
       } else {
-        alert('Error deleting product');
+        alert('Error archiving product');
       }
     }
   };
 
   const handleBulkDelete = async () => {
-    if (confirm(`Are you sure you want to delete ${selectedProducts.length} products?`)) {
-      const { error } = await supabase.from('products').delete().in('id', selectedProducts);
+    if (confirm(`Are you sure you want to archive ${selectedProducts.length} products?`)) {
+      const { error } = await supabase
+        .from('products')
+        .update({ status: 'archived' })
+        .in('id', selectedProducts);
+
       if (!error) {
         setProducts(products.filter(p => !selectedProducts.includes(p.id)));
         setSelectedProducts([]);
-        alert('Products deleted successfully');
+        alert('Products archived successfully');
       } else {
-        alert('Error deleting products');
+        alert('Error archiving products');
       }
     }
   };
@@ -235,11 +253,16 @@ export default function ProductsPage() {
                 <option value="">All Categories</option>
                 {categories.map((cat: any) => <option key={cat.name} value={cat.name}>{cat.name}</option>)}
               </select>
-              <select className="px-3 py-2 pr-8 border-2 border-gray-300 rounded-lg text-sm cursor-pointer">
-                <option>All Status</option>
-                <option>Active</option>
-                <option>Draft</option>
-                <option>Archived</option>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 pr-8 border-2 border-gray-300 rounded-lg text-sm cursor-pointer"
+              >
+                <option value="all_active">All Status (Default)</option>
+                <option value="active">Active Only</option>
+                <option value="draft">Drafts Only</option>
+                <option value="archived">Archived</option>
+                <option value="all">Show Everything</option>
               </select>
             </div>
           )}

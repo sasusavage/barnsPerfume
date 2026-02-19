@@ -118,11 +118,43 @@ export function CMSProvider({ children }: { children: ReactNode }) {
     const [banners, setBanners] = useState<Banner[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // CMS Fetching Logic Removed - Content is now managed in code.
-    const fetchCMSData = async () => { };
+    const fetchCMSData = async () => {
+        try {
+            setLoading(true);
+            const [settingsRes, contentRes, bannersRes] = await Promise.all([
+                supabase.from('site_settings').select('key, value'),
+                supabase.from('cms_content').select('*').eq('is_active', true),
+                supabase.from('banners').select('*').eq('is_active', true)
+            ]);
 
-    // Initial load handled by state defaults
+            if (settingsRes.data) {
+                const newSettings: any = { ...defaultSettings };
+                settingsRes.data.forEach((item: any) => {
+                    // Handle potential JSON string wrapping if value is a JSON string
+                    let val = item.value;
+                    // Supabase might return it already parsed if it's JSONB, 
+                    // but if stored as valid JSON string inside text it might be double quoted?
+                    // My insert was: ' "foo" ' -> stored as JSON string "foo". 
+                    // Supabase JS client for JSONB column returns usage JS value. 
+                    // So if stored "foo" (json string), it returns 'foo' (string). Correct.
+                    // But let's be safe.
+                    newSettings[item.key] = val;
+                });
+                setSettings(newSettings);
+            }
+
+            if (contentRes.data) setContent(contentRes.data);
+            if (bannersRes.data) setBanners(bannersRes.data);
+
+        } catch (error) {
+            console.error('Error fetching CMS data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
+        fetchCMSData();
     }, []);
 
     const getContent = (section: string, blockKey: string): CMSContent | undefined => {
@@ -137,6 +169,7 @@ export function CMSProvider({ children }: { children: ReactNode }) {
         const now = new Date();
         return banners.filter(b => {
             if (position && b.position !== position) return false;
+            // Handle potentially null dates properly
             if (b.start_date && new Date(b.start_date) > now) return false;
             if (b.end_date && new Date(b.end_date) < now) return false;
             return b.is_active;

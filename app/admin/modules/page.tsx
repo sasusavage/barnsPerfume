@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useCMS } from '@/context/CMSContext';
 
 interface Module {
   id: string;
@@ -22,31 +23,24 @@ const colorMap: Record<string, string> = {
   amber: 'bg-amber-100 text-amber-600',
   yellow: 'bg-yellow-100 text-yellow-600',
   indigo: 'bg-indigo-100 text-indigo-600',
-  gray: 'bg-gray-100 text-gray-600'
+  gray: 'bg-gray-100 text-gray-600',
+  cyan: 'bg-cyan-100 text-cyan-600'
 };
 
 export default function ModulesPage() {
+  const { getSetting } = useCMS();
   const [loading, setLoading] = useState(true);
 
   // Base definitions of modules
   const [modules, setModules] = useState<Module[]>([
     {
-      id: 'notifications',
-      name: 'Marketing Notifications',
-      description: 'Send Email and SMS campaigns to customers',
-      icon: 'ri-notification-3-line',
-      color: 'red',
-      enabled: false,
-      category: 'Marketing'
-    },
-    {
-      id: 'cms',
-      name: 'CMS / Pages',
-      description: 'Manage website content, policies, and landing pages',
-      icon: 'ri-file-list-line',
+      id: 'site-settings',
+      name: 'Site Settings', // Replaced 'cms' with 'site-settings'
+      description: 'Manage branding, logo, contact info, and footer links',
+      icon: 'ri-settings-3-line',
       color: 'blue',
       enabled: false,
-      category: 'Content'
+      category: 'General'
     },
     {
       id: 'homepage',
@@ -56,24 +50,6 @@ export default function ModulesPage() {
       color: 'purple',
       enabled: false,
       category: 'Content'
-    },
-    {
-      id: 'blog',
-      name: 'Blog Management',
-      description: 'Create and manage blog posts',
-      icon: 'ri-article-line',
-      color: 'teal',
-      enabled: false,
-      category: 'Marketing'
-    },
-    {
-      id: 'customer-insights',
-      name: 'Customer Insights',
-      description: 'Advanced analytics on customer behavior',
-      icon: 'ri-user-search-line',
-      color: 'orange',
-      enabled: false,
-      category: 'Analytics'
     },
     {
       id: 'flash-sales',
@@ -94,6 +70,33 @@ export default function ModulesPage() {
       category: 'Marketing'
     },
     {
+      id: 'customer-insights',
+      name: 'Customer Insights',
+      description: 'Advanced analytics on customer behavior',
+      icon: 'ri-user-search-line',
+      color: 'orange',
+      enabled: false,
+      category: 'Analytics'
+    },
+    {
+      id: 'notifications',
+      name: 'Marketing Notifications',
+      description: 'Send Email and SMS campaigns to customers',
+      icon: 'ri-notification-3-line',
+      color: 'red',
+      enabled: false,
+      category: 'Marketing'
+    },
+    {
+      id: 'blog',
+      name: 'Blog Management',
+      description: 'Create and manage blog posts',
+      icon: 'ri-article-line',
+      color: 'teal',
+      enabled: false,
+      category: 'Marketing'
+    },
+    {
       id: 'pwa-settings',
       name: 'PWA / Mobile App',
       description: 'Configure Progressive Web App settings',
@@ -101,6 +104,15 @@ export default function ModulesPage() {
       color: 'indigo',
       enabled: false,
       category: 'Mobile'
+    },
+    {
+      id: 'support',
+      name: 'AI Support Hub',
+      description: 'Manage chatbot and customer support tickets',
+      icon: 'ri-customer-service-2-line',
+      color: 'cyan',
+      enabled: false,
+      category: 'Support'
     }
   ]);
 
@@ -163,7 +175,9 @@ export default function ModulesPage() {
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === '6526') {
+    const adminPin = getSetting('admin_pin') || '6526';
+
+    if (pin === adminPin) {
       setIsLocked(false);
     } else {
       setPinError('Incorrect PIN');

@@ -88,13 +88,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 const existingItem = newCart[existingItemIndex];
                 // Ensure we don't exceed max stock
                 const newQuantity = Math.min(
-                    existingItem.quantity + newItem.quantity,
-                    existingItem.maxStock
+                    existingItem.quantity + (newItem.quantity || 1),
+                    existingItem.maxStock || 9999
                 );
                 newCart[existingItemIndex] = { ...existingItem, quantity: newQuantity };
                 return newCart;
             } else {
-                return [...prevCart, newItem];
+                return [...prevCart, { ...newItem, quantity: newItem.quantity || 1, maxStock: newItem.maxStock || 9999 }];
             }
         });
 
@@ -113,14 +113,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
             if (!item) return prevCart;
 
             const minQty = item.moq || 1;
-            
+
             // If trying to reduce below MOQ, remove the item
             if (quantity < minQty) {
                 return prevCart.filter(i => !(i.id === itemId && i.variant === variant));
             }
 
             // Clamp quantity between MOQ and maxStock
-            const clampedQty = Math.min(Math.max(quantity, minQty), item.maxStock);
+            const clampedQty = Math.min(Math.max(quantity, minQty), item.maxStock || 9999);
 
             return prevCart.map((i) =>
                 i.id === itemId && i.variant === variant

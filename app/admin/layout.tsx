@@ -209,16 +209,51 @@ export default function AdminLayout({
       moduleId: 'notifications'
     },
     {
-      title: 'SMS Debugger',
-      icon: 'ri-message-2-line',
-      path: '/admin/test-sms'
+      title: 'Flash Sales',
+      icon: 'ri-flashlight-line',
+      path: '/admin/flash-sales',
+      moduleId: 'flash-sales'
     },
-
+    {
+      title: 'Loyalty Program',
+      icon: 'ri-trophy-line',
+      path: '/admin/loyalty-program',
+      moduleId: 'loyalty-program'
+    },
+    {
+      title: 'AI Support',
+      icon: 'ri-customer-service-2-line',
+      path: '/admin/support',
+      moduleId: 'support'
+    },
     {
       title: 'Blog',
       icon: 'ri-article-line',
       path: '/admin/blog',
       moduleId: 'blog'
+    },
+    {
+      title: 'Homepage Config',
+      icon: 'ri-home-gear-line',
+      path: '/admin/homepage',
+      moduleId: 'homepage'
+    },
+    {
+      title: 'PWA Settings',
+      icon: 'ri-smartphone-line',
+      path: '/admin/pwa-settings',
+      moduleId: 'pwa-settings'
+    },
+    {
+      title: 'Site Settings',
+      icon: 'ri-settings-3-line',
+      path: '/admin/settings',
+      moduleId: 'site-settings'
+    },
+    {
+      title: 'SMS Debugger',
+      icon: 'ri-message-2-line',
+      path: '/admin/test-sms'
     },
     {
       title: 'Modules',
