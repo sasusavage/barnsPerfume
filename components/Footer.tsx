@@ -27,6 +27,7 @@ export default function Footer() {
   const { getSetting } = useCMS();
 
   const siteName = getSetting('site_name') || 'MultiMey Supplies';
+  const siteLogo = getSetting('site_logo') || '/logo.png';
   const siteTagline = getSetting('site_tagline') || 'Dresses, Electronics, Bags, Shoes & More.';
   const contactEmail = getSetting('contact_email') || '';
   const contactPhone = getSetting('contact_phone') || '+233209597443';
@@ -53,7 +54,7 @@ export default function Footer() {
             {/* Brand Column */}
             <div className="lg:col-span-1 space-y-6">
               <Link href="/" className="inline-block group">
-                <img src="/logo.png" alt={siteName} className="h-16 w-auto object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-300" />
+                <img src={siteLogo} alt={siteName} className="h-16 w-auto object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-300" />
               </Link>
               <p className="text-blue-200/60 leading-relaxed text-sm">
                 Your one-stop shop for dresses, electronics, bags, shoes and more. Locally sourced and imported quality products from Accra, Ghana.

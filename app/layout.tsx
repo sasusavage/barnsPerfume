@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { supabase } from '@/lib/supabase';
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CMSProvider } from "@/context/CMSContext";
@@ -14,97 +15,119 @@ export const viewport: Viewport = {
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.multimeysupplies.com';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "MultiMey Supplies | Quality Products & Supplies",
-    template: "%s | MultiMey Supplies"
-  },
-  description: "Shop dresses, electronics, bags, shoes & more at MultiMey Supplies. Locally sourced and imported quality products delivered across Ghana from Accra.",
-  keywords: [
-    "MultiMey Supplies",
-    "Online Store Ghana",
-    "Buy Dresses Online Ghana",
-    "Electronics Ghana",
-    "Bags and Shoes Accra",
-    "China Import Ghana",
-    "Affordable Fashion Ghana",
-    "Accra Online Shopping",
-    "Ghana E-commerce",
-    "Quality Products Accra"
-  ],
-  authors: [{ name: "MultiMey Supplies" }],
-  creator: "MultiMey Supplies",
-  publisher: "MultiMey Supplies",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  // Default values
+  let siteName = 'MultiMey Supplies';
+  let siteTagline = 'Quality Products & Supplies';
+  let siteDescription = "Shop dresses, electronics, bags, shoes & more at MultiMey Supplies. Locally sourced and imported quality products delivered across Ghana from Accra.";
+
+  try {
+    const { data } = await supabase.from('site_settings').select('key, value');
+    if (data) {
+      const settings = data.reduce((acc: any, curr: any) => {
+        acc[curr.key] = curr.value;
+        return acc;
+      }, {});
+
+      if (settings.site_name) siteName = settings.site_name;
+      if (settings.site_tagline) siteTagline = settings.site_tagline;
+      if (settings.site_description) siteDescription = settings.site_description;
+    }
+  } catch (e) {
+    // Fail gracefully to defaults
+  }
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${siteName} | ${siteTagline}`,
+      template: `%s | ${siteName}`
+    },
+    description: siteDescription,
+    keywords: [
+      siteName,
+      "Online Store Ghana",
+      "Buy Dresses Online Ghana",
+      "Electronics Ghana",
+      "Bags and Shoes Accra",
+      "China Import Ghana",
+      "Affordable Fashion Ghana",
+      "Accra Online Shopping",
+      "Ghana E-commerce",
+      "Quality Products Accra"
+    ],
+    authors: [{ name: siteName }],
+    creator: siteName,
+    publisher: siteName,
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  icons: {
-    icon: [
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/icon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/icon-48x48.png', sizes: '48x48', type: 'image/png' },
-      { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-384x384.png', sizes: '384x384', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    shortcut: '/favicon.png',
-  },
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'MultiMey Supplies',
-  },
-  formatDetection: {
-    telephone: true,
-  },
-  verification: {
-    // Add your Google Search Console verification code here
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_GH",
-    url: siteUrl,
-    title: "MultiMey Supplies | Quality Products & Supplies",
-    description: "Shop dresses, electronics, bags, shoes and more. Locally sourced and China-imported quality products delivered across Ghana.",
-    siteName: "MultiMey Supplies",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "MultiMey Supplies",
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "MultiMey Supplies | Quality Products & Supplies",
-    description: "Dresses, electronics, bags, shoes and more. Quality products delivered across Ghana from Accra.",
-    images: ["/og-image.png"],
-    creator: "@mey_phua",
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
-};
+    },
+    icons: {
+      icon: [
+        { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+        { url: '/icons/icon-16x16.png', sizes: '16x16', type: 'image/png' },
+        { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/icons/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+        { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+        { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      apple: [
+        { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+        { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-384x384.png', sizes: '384x384', type: 'image/png' },
+        { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      shortcut: '/favicon.png',
+    },
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: siteName,
+    },
+    formatDetection: {
+      telephone: true,
+    },
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_GH",
+      url: siteUrl,
+      title: `${siteName} | ${siteTagline}`,
+      description: siteDescription,
+      siteName: siteName,
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: siteName,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${siteName} | ${siteTagline}`,
+      description: siteDescription,
+      images: ["/og-image.png"],
+      creator: "@mey_phua",
+    },
+    alternates: {
+      canonical: siteUrl,
+    },
+  };
+}
 
 // Google Analytics Measurement ID
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
