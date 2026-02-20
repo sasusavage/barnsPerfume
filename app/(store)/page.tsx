@@ -180,10 +180,10 @@ export default function Home() {
               <div className="absolute inset-0 bg-black/30 z-[5]"></div> {/* 30% black overlay */}
 
               {/* Slide Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
                 <p
                   key={`tag-${currentSlide}`}
-                  className="text-white/90 text-sm md:text-base tracking-[0.2em] uppercase font-medium mb-6 animate-fade-in-up"
+                  className="text-white text-sm md:text-base tracking-[0.2em] uppercase font-medium mb-6 animate-fade-in-up"
                 >
                   {slide.tag}
                 </p>
@@ -198,7 +198,7 @@ export default function Home() {
 
                 <p
                   key={`sub-${currentSlide}`}
-                  className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 font-light tracking-wide animate-fade-in-up"
+                  className="text-lg md:text-xl text-white max-w-2xl mx-auto mb-10 font-light tracking-wide animate-fade-in-up"
                   style={{ animationDelay: '0.2s' }}
                 >
                   {slide.subtext}
