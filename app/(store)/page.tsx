@@ -177,7 +177,7 @@ export default function Home() {
                 />
               )}
 
-              <div className="absolute inset-0 bg-black/20 z-[5]"></div> {/* 20% black overlay */}
+              <div className="absolute inset-0 bg-black/30 z-[5]"></div> {/* 30% black overlay */}
 
               {/* Slide Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
