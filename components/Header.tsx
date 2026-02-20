@@ -17,7 +17,7 @@ export default function Header() {
 
   const { cartCount, isCartOpen, setIsCartOpen } = useCart();
   const { getSetting } = useCMS();
-  const siteName = getSetting('site_name') || '';
+  const siteName = getSetting('site_name') || 'Affordable perfumegh';
   const siteLogo = getSetting('site_logo') || '';
 
   useEffect(() => {

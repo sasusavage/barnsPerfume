@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-    let siteName = 'Store';
-    let siteDescription = 'Quality products delivered across Ghana.';
+    let siteName = 'Affordable perfumegh';
+    let siteDescription = 'Affordable Luxury Scents & Quality products delivered across Ghana.';
 
     try {
         const { data: name } = await supabase

@@ -16,7 +16,7 @@ export const viewport: Viewport = {
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://example.com';
 
 async function getSiteSettings() {
-  let siteName = 'Sasu Labs';
+  let siteName = 'Affordable perfumegh';
   let siteTagline = 'Quality Products & Supplies';
   let siteDescription = "Shop quality products delivered across Ghana.";
   let siteLogo = '/logo.png';
@@ -42,7 +42,8 @@ async function getSiteSettings() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { siteName, siteTagline, siteDescription } = await getSiteSettings();
+  const { siteName, siteTagline, siteDescription, siteLogo } = await getSiteSettings();
+  const ogImage = siteLogo.startsWith('http') ? siteLogo : `${siteUrl}${siteLogo}`;
 
   return {
     metadataBase: new URL(siteUrl),
@@ -116,7 +117,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: siteName,
       images: [
         {
-          url: "/og-image.png",
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: siteName,
@@ -127,8 +128,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: `${siteName} | ${siteTagline}`,
       description: siteDescription,
-      images: ["/og-image.png"],
-      creator: "@mey_phua",
+      images: [ogImage],
     },
     alternates: {
       canonical: siteUrl,
