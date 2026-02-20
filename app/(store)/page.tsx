@@ -385,6 +385,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Newsletter - Homepage Only */}
+      <NewsletterSection />
+
     </main>
   );
 }
