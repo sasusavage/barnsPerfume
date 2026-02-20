@@ -16,6 +16,19 @@ module.exports = {
           accent: '#38bdf8',
           muted: '#93c5fd',
         },
+        champagne: {
+          DEFAULT: '#F3E5AB',
+          gold: '#C5A059',
+          dark: '#8C7036',
+        },
+        ebony: {
+          DEFAULT: '#0C0C0C',
+          light: '#1A1A1A',
+        },
+        ghost: {
+          DEFAULT: '#F9F9F9',
+          white: '#FFFFFF',
+        },
       },
     },
   },

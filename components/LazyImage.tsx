@@ -7,6 +7,7 @@ interface LazyImageProps {
   src: string;
   alt: string;
   className?: string;
+  imgClassName?: string;
   width?: number;
   height?: number;
   priority?: boolean;
@@ -18,6 +19,7 @@ export default function LazyImage({
   src,
   alt,
   className = '',
+  imgClassName = 'object-cover',
   width,
   height,
   priority = false,
@@ -57,7 +59,7 @@ export default function LazyImage({
         alt={alt}
         fill
         sizes={sizes}
-        className={`object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${imgClassName}`}
         onLoad={handleLoad}
         onError={handleError}
         priority={priority}
