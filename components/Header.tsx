@@ -63,7 +63,7 @@ export default function Header() {
         <div className="safe-area-top" />
         <nav aria-label="Main navigation" className="relative">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="h-20 grid grid-cols-[auto_1fr_auto] items-center gap-4">
+            <div className="py-4 grid grid-cols-[auto_1fr_auto] items-center gap-4">
 
               {/* Left: Mobile Menu Trigger (Mobile) & Logo */}
               <div className="flex items-center gap-4">
@@ -79,7 +79,7 @@ export default function Header() {
                   className="flex items-center select-none gap-3"
                   aria-label="Go to homepage"
                 >
-                  <img src={siteLogo} alt={siteName} className="h-9 md:h-11 w-auto object-contain" />
+                  <img src={siteLogo} alt={siteName} className="h-12 md:h-16 w-auto object-contain" />
                   <span className="hidden sm:block text-xl md:text-2xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
                 </Link>
               </div>

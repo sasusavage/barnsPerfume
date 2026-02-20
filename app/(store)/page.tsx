@@ -177,10 +177,10 @@ export default function Home() {
                 />
               )}
 
-              <div className="absolute inset-0 bg-black/20"></div> {/* 20% black overlay */}
+              <div className="absolute inset-0 bg-black/20 z-[1]"></div> {/* 20% black overlay */}
 
               {/* Slide Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px] z-[2]">
                 <p
                   key={`tag-${currentSlide}`}
                   className="text-white/90 text-sm md:text-base tracking-[0.2em] uppercase font-medium mb-6 animate-fade-in-up"
