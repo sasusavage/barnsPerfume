@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import FraudDetectionAlert from '@/components/FraudDetectionAlert';
+import { useCMS } from '@/context/CMSContext';
 
 interface OrderDetailClientProps {
   orderId: string;
@@ -17,6 +18,10 @@ interface FraudAnalysis {
 }
 
 export default function OrderDetailClient({ orderId }: OrderDetailClientProps) {
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || 'Store';
+  const siteEmail = getSetting('contact_email') || 'support@yourstore.com';
+
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -250,8 +255,8 @@ export default function OrderDetailClient({ orderId }: OrderDetailClientProps) {
     'awaiting_payment': 'bg-gray-100 text-gray-700 border-gray-200'
   };
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (error || !order) return <div className="p-8 text-center text-red-500">{error || 'Order not found'}</div>;
+  if (loading) return <div className="p-8 text-center text-gray-900 bg-white min-h-screen">Loading...</div>;
+  if (error || !order) return <div className="p-8 text-center text-red-500 bg-white min-h-screen">{error || 'Order not found'}</div>;
 
   const currentStatus = order.status || 'pending';
   const shippingAddress = order.shipping_address || {};
@@ -279,12 +284,12 @@ export default function OrderDetailClient({ orderId }: OrderDetailClientProps) {
       {/* Print styles injected via useEffect */}
 
       {/* Printable Order Slip */}
-      <div className="print-section hidden print:block bg-white p-8">
+      <div className="print-section hidden print:block bg-white p-8 text-black">
         <div className="border-2 border-gray-800 p-6">
           {/* Header */}
           <div className="flex justify-between items-start border-b-2 border-gray-800 pb-4 mb-4">
             <div>
-              <h1 className="text-2xl font-bold">MultiMey Supplies</h1>
+              <h1 className="text-2xl font-bold">{siteName}</h1>
               <p className="text-sm text-gray-600">Order Packing Slip</p>
             </div>
             <div className="text-right">
@@ -345,8 +350,8 @@ export default function OrderDetailClient({ orderId }: OrderDetailClientProps) {
 
           {/* Footer */}
           <div className="border-t-2 border-gray-800 pt-4 text-center text-sm text-gray-600">
-            <p>Thank you for shopping with MultiMey Supplies!</p>
-            <p>Questions? Contact us at support@multimeysupplies.com</p>
+            <p>Thank you for shopping with {siteName}!</p>
+            <p>Questions? Contact us at {siteEmail}</p>
           </div>
         </div>
       </div>

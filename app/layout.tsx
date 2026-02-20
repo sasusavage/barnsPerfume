@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   themeColor: '#2563eb',
 };
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.multimeysupplies.com';
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://example.com';
 
 async function getSiteSettings() {
   let siteName = 'Sasu Labs';

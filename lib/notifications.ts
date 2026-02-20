@@ -4,22 +4,40 @@ import { escapeHtml } from '@/lib/sanitize';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 'missing_api_key');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@standardecom.com';
-const EMAIL_FROM = process.env.EMAIL_FROM || 'MultiMey Supplies <noreply@multimeysupplies.com>';
-const BRAND = {
-    name: 'MultiMey Supplies',
-    color: '#2563eb',
-    colorLight: '#eff6ff',
-    colorDark: '#064e3b',
-    url: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, ''),
-    phone: '+233209597443',
-};
+
+async function getBrand() {
+    let siteName = '';
+    let sitePhone = '+233209597443';
+
+    try {
+        const { data } = await supabase.from('site_settings').select('key, value');
+        if (data) {
+            const settings = data.reduce((acc: any, curr: any) => {
+                acc[curr.key] = curr.value;
+                return acc;
+            }, {});
+            if (settings.site_name) siteName = settings.site_name;
+            if (settings.contact_phone) sitePhone = settings.contact_phone;
+        }
+    } catch (e) { }
+
+    return {
+        name: siteName,
+        emailName: siteName || 'Store',
+        color: '#1a1a1a',
+        colorLight: '#f3f4f6',
+        colorDark: '#000000',
+        url: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, ''),
+        phone: sitePhone,
+    };
+}
 
 // Reusable branded email layout
-export function emailLayout(body: string, preheader?: string): string {
+export function emailLayout(body: string, brand: any, preheader?: string): string {
     return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>${BRAND.name}</title>
+<title>${brand.name}</title>
 ${preheader ? `<span style="display:none;max-height:0;overflow:hidden;">${preheader}</span>` : ''}
 </head>
 <body style="margin:0;padding:0;background-color:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
@@ -28,8 +46,8 @@ ${preheader ? `<span style="display:none;max-height:0;overflow:hidden;">${prehea
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.07);">
 
 <!-- Header -->
-<tr><td style="background:linear-gradient(135deg,${BRAND.color},${BRAND.colorDark});padding:32px 40px;text-align:center;">
-<h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;">${BRAND.name}</h1>
+<tr><td style="background:linear-gradient(135deg,${brand.color},${brand.colorDark});padding:32px 40px;text-align:center;">
+<h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;">${brand.name}</h1>
 <p style="margin:6px 0 0;color:rgba(255,255,255,0.8);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;">Premium Quality Products</p>
 </td></tr>
 
@@ -42,9 +60,9 @@ ${body}
 <tr><td style="background-color:#f9fafb;padding:24px 40px;border-top:1px solid #e5e7eb;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 <tr><td style="text-align:center;">
-<p style="margin:0 0 8px;color:#6b7280;font-size:13px;">Need help? Contact us at <a href="tel:${BRAND.phone}" style="color:${BRAND.color};text-decoration:none;">${BRAND.phone}</a></p>
-<p style="margin:0 0 12px;color:#6b7280;font-size:13px;"><a href="${BRAND.url}" style="color:${BRAND.color};text-decoration:none;">Visit our store</a> &nbsp;·&nbsp; <a href="${BRAND.url}/order-tracking" style="color:${BRAND.color};text-decoration:none;">Track order</a></p>
-<p style="margin:0;color:#9ca3af;font-size:11px;">&copy; ${new Date().getFullYear()} ${BRAND.name}. All rights reserved.</p>
+<p style="margin:0 0 8px;color:#6b7280;font-size:13px;">Need help? Contact us at <a href="tel:${brand.phone}" style="color:${brand.color};text-decoration:none;">${brand.phone}</a></p>
+<p style="margin:0 0 12px;color:#6b7280;font-size:13px;"><a href="${brand.url}" style="color:${brand.color};text-decoration:none;">Visit our store</a> &nbsp;·&nbsp; <a href="${brand.url}/order-tracking" style="color:${brand.color};text-decoration:none;">Track order</a></p>
+<p style="margin:0;color:#9ca3af;font-size:11px;">&copy; ${new Date().getFullYear()} ${brand.name}. All rights reserved.</p>
 </td></tr>
 </table>
 </td></tr>
@@ -56,8 +74,8 @@ ${body}
 }
 
 // Reusable styled button
-function emailButton(text: string, href: string, color?: string): string {
-    const bg = color || BRAND.color;
+function emailButton(text: string, href: string, brand: any, color?: string): string {
+    const bg = color || brand.color;
     return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto;"><tr>
 <td style="background-color:${bg};border-radius:8px;"><a href="${href}" target="_blank" style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">${text}</a></td>
 </tr></table>`;
@@ -92,8 +110,12 @@ export async function sendEmail({ to, subject, html }: { to: string; subject: st
         return null;
     }
     try {
+        const brand = await getBrand();
+        const baseUrl = brand.url;
+        const emailFrom = `${brand.emailName} <noreply@${baseUrl.replace(/https?:\/\//, '').split('/')[0]}>`;
+
         const data = await resend.emails.send({
-            from: EMAIL_FROM,
+            from: emailFrom,
             to,
             subject,
             html,
@@ -131,10 +153,8 @@ function formatPhoneNumber(phone: string): string {
     return '+' + cleaned;
 }
 
-export async function sendSMS({ to, message }: { to: string; message: string }) {
-    // Moolre SMS API only requires X-API-VASKEY header for authentication
-    // See: https://docs.moolre.com/#/send-sms
-    // Allow MOOLRE_SMS_API_KEY or fall back to MOOLRE_API_KEY
+export async function sendSMS({ to, message, senderId }: { to: string; message: string; senderId?: string }) {
+    const brand = await getBrand();
     const smsVasKey = process.env.MOOLRE_SMS_API_KEY || process.env.MOOLRE_API_KEY;
 
     if (!smsVasKey) {
@@ -143,9 +163,10 @@ export async function sendSMS({ to, message }: { to: string; message: string }) 
     }
 
     const recipient = formatPhoneNumber(to);
+    const sid = (senderId || brand.name || 'Store').substring(0, 11);
 
     try {
-        console.log(`[SMS] Sending to ${maskPhone(recipient)}`);
+        console.log(`[SMS] Sending to ${maskPhone(recipient)} | Sender: ${sid}`);
         const response = await fetch('https://api.moolre.com/open/sms/send', {
             method: 'POST',
             headers: {
@@ -154,7 +175,7 @@ export async function sendSMS({ to, message }: { to: string; message: string }) 
             },
             body: JSON.stringify({
                 type: 1,
-                senderid: 'MultiMey',
+                senderid: sid,
                 messages: [
                     {
                         recipient: recipient,
@@ -184,9 +205,11 @@ export async function sendSMS({ to, message }: { to: string; message: string }) 
 }
 
 export async function sendOrderConfirmation(order: any) {
+    const brand = await getBrand();
     const { id, email, phone: orderPhone, shipping_address, total, created_at, order_number, metadata } = order;
 
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    const baseUrl = brand.url;
+    const emailFrom = `${brand.emailName} <noreply@${baseUrl.replace(/https?:\/\//, '').split('/')[0]}>`;
 
     // Build customer name from available sources
     const getName = () => {
@@ -242,7 +265,7 @@ export async function sendOrderConfirmation(order: any) {
     // 1. Email to Customer
     const customerEmailHtml = emailLayout(`
 <div style="text-align:center;margin-bottom:24px;">
-  <div style="width:64px;height:64px;background-color:${BRAND.colorLight};border-radius:50%;margin:0 auto 16px;line-height:64px;font-size:28px;">&#10003;</div>
+  <div style="width:64px;height:64px;background-color:${brand.colorLight};border-radius:50%;margin:0 auto 16px;line-height:64px;font-size:28px;">&#10003;</div>
   <h2 style="margin:0 0 4px;color:#111827;font-size:24px;">Order Confirmed!</h2>
   <p style="margin:0;color:#6b7280;font-size:15px;">Thank you for your purchase, ${name}.</p>
 </div>
@@ -258,12 +281,13 @@ ${emailShippingNotes(shippingNotes)}
 
 <p style="color:#374151;font-size:14px;line-height:1.6;margin:16px 0;">We're getting your order ready. You'll receive updates as it's processed and packaged.</p>
 
-${emailButton('Track Your Order', trackingUrl)}
+${emailButton('Track Your Order', trackingUrl, brand)}
 
-<p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Or copy this link: <a href="${trackingUrl}" style="color:${BRAND.color};">${trackingUrl}</a></p>
-`, `Your order #${order_number || id} is confirmed!`);
+<p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Or copy this link: <a href="${trackingUrl}" style="color:${brand.color};">${trackingUrl}</a></p>
+`, brand, `Your order #${order_number || id} is confirmed!`);
 
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: email,
         subject: `Order Confirmed! #${order_number || id}`,
         html: customerEmailHtml
@@ -283,10 +307,11 @@ ${emailButton('Track Your Order', trackingUrl)}
 
 ${emailShippingNotes(shippingNotes)}
 
-${emailButton('View Order in Admin', `${baseUrl}/admin/orders/${id}`)}
-`, `New order #${order_number} from ${name}`);
+${emailButton('View Order in Admin', `${baseUrl}/admin/orders/${id}`, brand)}
+`, brand, `New order #${order_number} from ${name}`);
 
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: ADMIN_EMAIL,
         subject: `New Order #${order_number || id}`,
         html: adminEmailHtml
@@ -296,7 +321,7 @@ ${emailButton('View Order in Admin', `${baseUrl}/admin/orders/${id}`)}
     if (phone) {
         const smsMessage = trackingNumber
             ? `Hi ${name}, your order #${order_number || id} is confirmed! Tracking: ${trackingNumber}. Track here: ${trackingUrl}${shippingNotesSms}`
-            : `Hi ${name}, your order #${order_number || id} at MultiMey Supplies is confirmed! Track here: ${trackingUrl}${shippingNotesSms}`;
+            : `Hi ${name}, your order #${order_number || id} at ${brand.name || 'our store'} is confirmed! Track here: ${trackingUrl}${shippingNotesSms}`;
 
         await sendSMS({
             to: phone,
@@ -306,9 +331,11 @@ ${emailButton('View Order in Admin', `${baseUrl}/admin/orders/${id}`)}
 }
 
 export async function sendOrderStatusUpdate(order: any, newStatus: string) {
+    const brand = await getBrand();
     const { id, email, phone: orderPhone, shipping_address, order_number, metadata } = order;
 
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    const baseUrl = brand.url;
+    const emailFrom = `${brand.emailName} <noreply@${baseUrl.replace(/https?:\/\//, '').split('/')[0]}>`;
 
     // Build customer name from available sources
     const getName = () => {
@@ -361,7 +388,8 @@ export async function sendOrderStatusUpdate(order: any, newStatus: string) {
     };
     const sc = statusConfig[newStatus] || { icon: '&#128276;', color: '#6b7280', bg: '#f9fafb' };
 
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: email,
         subject: subject,
         html: emailLayout(`
@@ -379,8 +407,8 @@ export async function sendOrderStatusUpdate(order: any, newStatus: string) {
 
 <p style="color:#374151;font-size:14px;line-height:1.6;margin:16px 0;">${message}</p>
 
-${emailButton('Track Your Order', trackingUrl)}
-`, `Your order #${order_number} is now ${newStatus}`)
+${emailButton('Track Your Order', trackingUrl, brand)}
+`, brand, `Your order #${order_number} is now ${newStatus}`)
     });
 
     // SMS
@@ -393,28 +421,31 @@ ${emailButton('Track Your Order', trackingUrl)}
 }
 
 export async function sendWelcomeMessage(user: { email: string, firstName: string, phone?: string }) {
+    const brand = await getBrand();
     const { email, firstName, phone } = user;
+    const emailFrom = `${brand.emailName} <noreply@${brand.url.replace(/https?:\/\//, '').split('/')[0]}>`;
 
     // Email
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: email,
-        subject: `Welcome to ${BRAND.name}!`,
+        subject: `Welcome to ${brand.name || 'our store'}!`,
         html: emailLayout(`
 <div style="text-align:center;margin-bottom:24px;">
-  <div style="width:64px;height:64px;background-color:${BRAND.colorLight};border-radius:50%;margin:0 auto 16px;line-height:64px;font-size:28px;">&#128075;</div>
+  <div style="width:64px;height:64px;background-color:${brand.colorLight};border-radius:50%;margin:0 auto 16px;line-height:64px;font-size:28px;">&#128075;</div>
   <h2 style="margin:0 0 4px;color:#111827;font-size:24px;">Welcome, ${firstName}!</h2>
   <p style="margin:0;color:#6b7280;font-size:15px;">We're so glad you're here.</p>
 </div>
 
-<p style="color:#374151;font-size:14px;line-height:1.7;margin:16px 0;">Thank you for joining the ${BRAND.name} family. We source premium quality products directly from China at unbeatable prices &mdash; perfect for homes, businesses, and resellers.</p>
+<p style="color:#374151;font-size:14px;line-height:1.7;margin:16px 0;">Thank you for joining the ${brand.name || 'our'} family. We source premium quality products directly from our trusted partners at unbeatable prices.</p>
 
 <div style="background-color:#f9fafb;border-radius:12px;padding:20px;margin:20px 0;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
     <tr>
       <td style="text-align:center;padding:8px;width:33%;">
         <p style="font-size:20px;margin:0 0 4px;">&#128666;</p>
-        <p style="color:#374151;font-size:12px;font-weight:600;margin:0;">Free Pickup</p>
-        <p style="color:#9ca3af;font-size:11px;margin:2px 0 0;">Available in store</p>
+        <p style="color:#374151;font-size:12px;font-weight:600;margin:0;">Fast Delivery</p>
+        <p style="color:#9ca3af;font-size:11px;margin:2px 0 0;">Nationwide</p>
       </td>
       <td style="text-align:center;padding:8px;width:33%;">
         <p style="font-size:20px;margin:0 0 4px;">&#9989;</p>
@@ -430,24 +461,26 @@ export async function sendWelcomeMessage(user: { email: string, firstName: strin
   </table>
 </div>
 
-${emailButton('Start Shopping', `${BRAND.url}/shop`)}
-`, `Welcome to ${BRAND.name}, ${firstName}!`)
+${emailButton('Start Shopping', `${brand.url}/shop`, brand)}
+`, brand, `Welcome to ${brand.name || 'our store'}, ${firstName}!`)
     });
 
     // SMS
     if (phone) {
         await sendSMS({
             to: phone,
-            message: `Welcome ${firstName}! Thanks for joining MultiMey Supplies.`
+            message: `Welcome ${firstName}! Thanks for joining ${brand.name || 'our store'}.`
         });
     }
 }
 
 export async function sendPaymentLink(order: any) {
+    const brand = await getBrand();
     const { id, email, phone: orderPhone, shipping_address, total, order_number, metadata } = order;
 
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/+$/, '');
+    const baseUrl = brand.url;
     const paymentUrl = `${baseUrl}/pay/${id}`;
+    const emailFrom = `${brand.emailName} <noreply@${baseUrl.replace(/https?:\/\//, '').split('/')[0]}>`;
 
     // Build customer name from available sources
     const getName = () => {
@@ -470,7 +503,8 @@ export async function sendPaymentLink(order: any) {
     console.log(`[Notification] Sending payment link for Order #${order_number} | Phone: ${phone ? 'Present' : 'Missing'}`);
 
     // Email with payment link
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: email,
         subject: `Complete Your Order #${order_number}`,
         html: emailLayout(`
@@ -482,15 +516,15 @@ export async function sendPaymentLink(order: any) {
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border-radius:12px;overflow:hidden;margin:20px 0;">
   ${emailInfoRow('Order Number', `#${order_number}`)}
-  ${emailInfoRow('Amount Due', `<span style="color:${BRAND.color};font-size:18px;font-weight:700;">GH₵${Number(total).toFixed(2)}</span>`)}
+  ${emailInfoRow('Amount Due', `<span style="color:${brand.color};font-size:18px;font-weight:700;">GH₵${Number(total).toFixed(2)}</span>`)}
 </table>
 
 <p style="color:#374151;font-size:14px;line-height:1.6;margin:16px 0;">Click the button below to securely complete your payment. This link will remain active until your order is completed or cancelled.</p>
 
-${emailButton('Pay Now — GH₵' + Number(total).toFixed(2), paymentUrl, '#d97706')}
+${emailButton('Pay Now — GH₵' + Number(total).toFixed(2), paymentUrl, brand, '#d97706')}
 
-<p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Or copy this link: <a href="${paymentUrl}" style="color:${BRAND.color};">${paymentUrl}</a></p>
-`, `Complete payment for order #${order_number}`)
+<p style="color:#9ca3af;font-size:12px;text-align:center;margin:0;">Or copy this link: <a href="${paymentUrl}" style="color:${brand.color};">${paymentUrl}</a></p>
+`, brand, `Complete payment for order #${order_number}`)
     });
 
     // SMS with payment link
@@ -505,7 +539,9 @@ ${emailButton('Pay Now — GH₵' + Number(total).toFixed(2), paymentUrl, '#d977
 }
 
 export async function sendContactMessage(data: { name: string, email: string, subject: string, message: string }) {
+    const brand = await getBrand();
     const { name, email, subject, message } = data;
+    const emailFrom = `${brand.emailName} <noreply@${brand.url.replace(/https?:\/\//, '').split('/')[0]}>`;
 
     // SECURITY: Sanitize all user input before injecting into HTML
     const safeName = escapeHtml(name);
@@ -514,30 +550,32 @@ export async function sendContactMessage(data: { name: string, email: string, su
     const safeEmail = escapeHtml(email);
 
     // 1. Acknowledge to User
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: email,
         subject: `We received your message: ${subject}`,
         html: emailLayout(`
 <div style="text-align:center;margin-bottom:24px;">
-  <div style="width:64px;height:64px;background-color:${BRAND.colorLight};border-radius:50%;margin:0 auto 16px;line-height:64px;font-size:28px;">&#128172;</div>
+  <div style="width:64px;height:64px;background-color:${brand.colorLight};border-radius:50%;margin:0 auto 16px;line-height:64px;font-size:28px;">&#128172;</div>
   <h2 style="margin:0 0 4px;color:#111827;font-size:22px;">Message Received</h2>
   <p style="margin:0;color:#6b7280;font-size:14px;">We'll get back to you soon.</p>
 </div>
 
 <p style="color:#374151;font-size:14px;line-height:1.7;margin:16px 0;">Hi ${safeName},</p>
-<p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 16px;">Thank you for reaching out to ${BRAND.name}. We've received your message regarding <strong>"${safeSubject}"</strong> and our team will respond as soon as possible.</p>
+<p style="color:#374151;font-size:14px;line-height:1.7;margin:0 0 16px;">Thank you for reaching out to ${brand.name || 'us'}. We've received your message regarding <strong>"${safeSubject}"</strong> and our team will respond as soon as possible.</p>
 
-<div style="background-color:#f9fafb;border-left:4px solid ${BRAND.color};border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0;">
+<div style="background-color:#f9fafb;border-left:4px solid ${brand.color};border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0;">
   <p style="color:#6b7280;font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:0.5px;">Your message</p>
   <p style="color:#374151;font-size:14px;margin:0;line-height:1.6;">${safeMessage}</p>
 </div>
 
 <p style="color:#6b7280;font-size:13px;margin:16px 0 0;">We typically respond within 24 hours.</p>
-`, `Thanks for contacting us, ${safeName}`)
+`, brand, `Thanks for contacting us, ${safeName}`)
     });
 
     // 2. Alert Admin
-    await sendEmail({
+    await resend.emails.send({
+        from: emailFrom,
         to: ADMIN_EMAIL,
         subject: `Contact: ${subject}`,
         html: emailLayout(`
@@ -545,16 +583,16 @@ export async function sendContactMessage(data: { name: string, email: string, su
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border-radius:12px;overflow:hidden;margin:16px 0;">
   ${emailInfoRow('From', safeName)}
-  ${emailInfoRow('Email', `<a href="mailto:${safeEmail}" style="color:${BRAND.color};">${safeEmail}</a>`)}
+  ${emailInfoRow('Email', `<a href="mailto:${safeEmail}" style="color:${brand.color};">${safeEmail}</a>`)}
   ${emailInfoRow('Subject', safeSubject)}
 </table>
 
-<div style="background-color:#f9fafb;border-left:4px solid ${BRAND.color};border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0;">
+<div style="background-color:#f9fafb;border-left:4px solid ${brand.color};border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0;">
   <p style="color:#6b7280;font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:0.5px;">Message</p>
   <p style="color:#374151;font-size:14px;margin:0;line-height:1.6;">${safeMessage}</p>
 </div>
 
-${emailButton('Reply to ' + safeName, `mailto:${safeEmail}?subject=Re: ${encodeURIComponent(subject)}`)}
-`, `New contact from ${safeName}: ${safeSubject}`)
+${emailButton('Reply to ' + safeName, `mailto:${safeEmail}?subject=Re: ${encodeURIComponent(subject)}`, brand)}
+`, brand, `New contact from ${safeName}: ${safeSubject}`)
     });
 }

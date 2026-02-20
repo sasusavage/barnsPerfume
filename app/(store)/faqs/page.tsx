@@ -2,8 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useCMS } from '@/context/CMSContext';
 
 export default function FAQsPage() {
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || 'Store';
+  const siteEmail = getSetting('contact_email') || 'support@yourstore.com';
+  const sitePhone = getSetting('contact_phone') || '+233 20 959 7443';
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -20,12 +26,12 @@ export default function FAQsPage() {
     {
       category: 'orders',
       question: 'How do I place an order?',
-      answer: 'Browse our products, add items to your cart, proceed to checkout, provide your delivery address, select payment method, and confirm your order. You\'ll receive an email confirmation with your order details and tracking number.'
+      answer: `Browse our products, add items to your cart, proceed to checkout, provide your delivery address, select payment method, and confirm your order. You'll receive an email confirmation with your order details and tracking number.`
     },
     {
       category: 'orders',
       question: 'Can I modify or cancel my order?',
-      answer: 'You can modify or cancel your order within 1 hour of placing it. Contact our customer service immediately via WhatsApp at +233 20 959 7443 or email support@multimeysupplies.com. Once an order is processed, modifications may not be possible.'
+      answer: `You can modify or cancel your order within 1 hour of placing it. Contact our customer service immediately via WhatsApp at ${sitePhone} or email ${siteEmail}. Once an order is processed, modifications may not be possible.`
     },
     {
       category: 'orders',
@@ -45,7 +51,7 @@ export default function FAQsPage() {
     {
       category: 'shipping',
       question: 'How much does shipping cost?',
-      answer: 'Standard shipping costs GHS 20. Express delivery costs GHS 40. Orders over GHS 300 qualify for FREE standard shipping. Store pickup is also available at no charge from our Accra location.'
+      answer: 'Standard shipping costs GHS 20. Express delivery costs GHS 40. Orders over GHS 300 qualify for FREE standard shipping. Store pickup is also available at no charge from our main location.'
     },
     {
       category: 'shipping',
@@ -80,12 +86,12 @@ export default function FAQsPage() {
     {
       category: 'payment',
       question: 'What payment methods do you accept?',
-      answer: 'We accept MTN Mobile Money, Vodafone Cash, AirtelTigo Money, and Visa/Mastercard credit and debit cards via our secure Moolre payment gateway. All transactions are encrypted and processed securely.'
+      answer: 'We accept MTN Mobile Money, Vodafone Cash, AirtelTigo Money, and Visa/Mastercard credit and debit cards via our secure payment gateway. All transactions are encrypted and processed securely.'
     },
     {
       category: 'payment',
       question: 'Is it safe to use my credit card on your site?',
-      answer: 'Absolutely. We use industry-standard SSL encryption and partner with Moolre for secure payment processing. We never store your full card details on our servers. All transactions are PCI-DSS compliant.'
+      answer: 'Absolutely. We use industry-standard SSL encryption and partner with secure processors for payment processing. We never store your full card details on our servers. All transactions are PCI-DSS compliant.'
     },
     {
       category: 'payment',
@@ -131,7 +137,7 @@ export default function FAQsPage() {
 
   const filteredFAQs = faqs.filter(faq => {
     const matchesCategory = activeCategory === 'all' || faq.category === activeCategory;
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -169,11 +175,10 @@ export default function FAQsPage() {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all whitespace-nowrap ${
-                activeCategory === category.id
-                  ? 'bg-blue-700 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all whitespace-nowrap ${activeCategory === category.id
+                ? 'bg-blue-700 text-white shadow-lg'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
             >
               <i className={`${category.icon} text-lg`}></i>
               {category.name}

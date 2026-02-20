@@ -72,11 +72,10 @@ export default function ProductEditor({ productId }: { productId: string }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-6 py-4 font-semibold whitespace-nowrap transition-colors border-b-2 cursor-pointer ${
-                  activeTab === tab.id
-                    ? 'border-blue-700 text-blue-700 bg-blue-50'
-                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                className={`flex items-center space-x-2 px-6 py-4 font-semibold whitespace-nowrap transition-colors border-b-2 cursor-pointer ${activeTab === tab.id
+                  ? 'border-blue-700 text-blue-700 bg-blue-50'
+                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
               >
                 <i className={`${tab.icon} text-xl`}></i>
                 <span>{tab.label}</span>
@@ -205,7 +204,7 @@ export default function ProductEditor({ productId }: { productId: string }) {
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-blue-900 font-semibold mb-1">Discount Calculation</p>
                 <p className="text-blue-800">
-                  Savings: GH₵ {(parseFloat(comparePrice) - parseFloat(price)).toFixed(2)} 
+                  Savings: GH₵ {(parseFloat(comparePrice) - parseFloat(price)).toFixed(2)}
                   <span className="ml-2">
                     ({(((parseFloat(comparePrice) - parseFloat(price)) / parseFloat(comparePrice)) * 100).toFixed(0)}% off)
                   </span>
@@ -214,7 +213,7 @@ export default function ProductEditor({ productId }: { productId: string }) {
 
               <div className="pt-6 border-t border-gray-200">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Inventory</h3>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 mb-2">
@@ -355,7 +354,7 @@ export default function ProductEditor({ productId }: { productId: string }) {
                     </div>
                   </div>
                 ))}
-                
+
                 <button className="aspect-square border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-700 hover:bg-blue-50 transition-colors flex flex-col items-center justify-center space-y-2 text-gray-600 hover:text-blue-700 cursor-pointer">
                   <i className="ri-upload-2-line text-3xl"></i>
                   <span className="text-sm font-semibold">Upload Image</span>
@@ -364,7 +363,7 @@ export default function ProductEditor({ productId }: { productId: string }) {
 
               <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-700">
-                  <strong>Image Guidelines:</strong> Use high-quality images (min 1000x1000px), white or neutral backgrounds work best. 
+                  <strong>Image Guidelines:</strong> Use high-quality images (min 1000x1000px), white or neutral backgrounds work best.
                   Supported formats: JPG, PNG, WebP (max 5MB each).
                 </p>
               </div>
@@ -425,7 +424,7 @@ export default function ProductEditor({ productId }: { productId: string }) {
                 </label>
                 <input
                   type="text"
-                  defaultValue="MultiMey Supplies, quality products, Ghana shopping"
+                  defaultValue="shopping, quality products, Ghana"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <p className="text-sm text-gray-500 mt-2">Separate keywords with commas</p>

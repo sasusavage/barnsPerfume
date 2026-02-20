@@ -6,7 +6,11 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
+import { useCMS } from '@/context/CMSContext';
+
 export default function PaymentPage() {
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || 'Store';
   usePageTitle('Complete Payment');
   const params = useParams();
   const router = useRouter();
@@ -130,7 +134,7 @@ export default function PaymentPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-6">
-            <span className="text-2xl font-['Pacifico'] text-blue-700">MultiMey</span>
+            <span className="text-2xl font-bold text-blue-700">{siteName}</span>
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Complete Your Payment</h1>
           <p className="text-gray-600 mt-2">Hi {customerName}, your order is waiting for payment.</p>

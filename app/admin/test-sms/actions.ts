@@ -1,6 +1,7 @@
 'use server';
 
 import { verifyAdminToken } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 
 export async function testSmsAction(phone: string, message: string, authToken: string) {
     // SECURITY: Verify admin authentication before allowing SMS sending
@@ -45,6 +46,17 @@ export async function testSmsAction(phone: string, message: string, authToken: s
         }
         const recipient = '+' + cleaned;
 
+        // Fetch site name for sender ID
+        let senderId = 'Store';
+        try {
+            const { data: settings } = await supabase
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'site_name')
+                .single();
+            if (settings?.value) senderId = settings.value.substring(0, 11);
+        } catch (e) { }
+
         // Make API call per Moolre documentation
         const response = await fetch('https://api.moolre.com/open/sms/send', {
             method: 'POST',
@@ -54,7 +66,7 @@ export async function testSmsAction(phone: string, message: string, authToken: s
             },
             body: JSON.stringify({
                 type: 1,
-                senderid: 'MultiMey',
+                senderid: senderId,
                 messages: [
                     {
                         recipient: recipient,

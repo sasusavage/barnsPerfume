@@ -88,8 +88,8 @@ export default function ContactPage() {
   };
 
   // Get contact details from CMS settings
-  const contactEmail = getSetting('contact_email') || 'support@multimeysupplies.com';
-  const contactPhone = getSetting('contact_phone') || '+233209597443';
+  const contactEmail = getSetting('contact_email') || 'support@yourstore.com';
+  const contactPhone = getSetting('contact_phone') || '+233 00 000 0000';
   const contactAddress = getSetting('contact_address') || 'Accra, Ghana';
 
   const heroTitle = pageContent?.title || 'Get In Touch';
@@ -102,7 +102,7 @@ export default function ContactPage() {
       title: 'Call Us',
       value: contactPhone,
       link: `tel:${contactPhone.replace(/\s/g, '')}`,
-      description: 'Mon-Fri, 8am-6pm GMT'
+      description: 'Customer Support Line'
     },
     {
       icon: 'ri-mail-line',
@@ -123,22 +123,22 @@ export default function ContactPage() {
       title: 'Visit Us',
       value: contactAddress,
       link: 'https://maps.google.com',
-      description: 'Mon-Sat, 9am-6pm'
+      description: 'Store Location'
     }
   ];
 
   const faqs = [
     {
       question: 'What are your delivery times?',
-      answer: 'Standard delivery takes 2-5 business days within Ghana. Express delivery is available for Accra and Kumasi. We ship dresses, electronics, bags, shoes and all other items with care.'
+      answer: 'Standard delivery takes 2-5 business days within Ghana. Express delivery is available for main cities.'
     },
     {
       question: 'Do you offer international shipping?',
-      answer: 'Currently, we ship within Ghana only. Many of our products are imported from China, so we handle all international logistics on our end. You simply order and receive.'
+      answer: 'Currently, we ship within Ghana only. We are working on expanding our reach.'
     },
     {
       question: 'What payment methods do you accept?',
-      answer: 'We accept mobile money (MTN, Vodafone, AirtelTigo) and credit/debit cards through our secure Moolre payment gateway.'
+      answer: 'We accept mobile money and credit/debit cards through our secure payment gateway.'
     }
   ];
 
@@ -146,7 +146,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-white">
       <PageHero
         title="Get In Touch"
-        subtitle="Have a question about our dresses, electronics, bags, or shoes? We're here to help from Accra, Ghana."
+        subtitle="Have a question or need assistance? We're here to help."
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

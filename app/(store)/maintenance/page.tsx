@@ -1,4 +1,18 @@
+"use client";
+
+import { useCMS } from '@/context/CMSContext';
+
 export default function MaintenancePage() {
+  const { getSetting } = useCMS();
+  const siteEmail = getSetting('contact_email') || 'support@yourstore.com';
+  const sitePhone = getSetting('contact_phone') || '+233 20 959 7443';
+  const instagram = getSetting('social_instagram') || 'https://instagram.com';
+  const twitter = getSetting('social_twitter') || 'https://x.com';
+  const facebook = getSetting('social_facebook') || 'https://facebook.com';
+
+  const cleanPhone = sitePhone.replace(/\D/g, '');
+  const waPhone = cleanPhone.startsWith('0') ? '233' + cleanPhone.slice(1) : cleanPhone;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-amber-50 flex items-center justify-center px-4">
       <div className="max-w-2xl mx-auto text-center">
@@ -58,14 +72,14 @@ export default function MaintenancePage() {
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <a
-              href="mailto:support@multimeysupplies.com"
+              href={`mailto:${siteEmail}`}
               className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors border border-gray-200 whitespace-nowrap"
             >
               <i className="ri-mail-line"></i>
               Email Us
             </a>
             <a
-              href="https://wa.me/233209597443"
+              href={`https://wa.me/${waPhone}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-blue-700 text-white px-6 py-3 rounded-full font-medium hover:bg-blue-800 transition-colors whitespace-nowrap"
@@ -74,7 +88,7 @@ export default function MaintenancePage() {
               WhatsApp
             </a>
             <a
-              href="tel:+233209597443"
+              href={`tel:${sitePhone}`}
               className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-medium hover:bg-gray-50 transition-colors border border-gray-200 whitespace-nowrap"
             >
               <i className="ri-phone-line"></i>
@@ -87,14 +101,14 @@ export default function MaintenancePage() {
           <p className="mb-2">Thank you for your patience</p>
           <p>Follow us on social media for real-time updates</p>
           <div className="flex gap-4 justify-center mt-4">
-            <a href="https://www.instagram.com/mey_phua" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
+            <a href={instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
               <i className="ri-instagram-line text-gray-600"></i>
             </a>
-            <a href="https://x.com/mey_phua" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
+            <a href={twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
               <i className="ri-twitter-fill text-gray-600"></i>
             </a>
-            <a href="https://www.tiktok.com/@mey_phua" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
-              <i className="ri-tiktok-fill text-gray-600"></i>
+            <a href={facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
+              <i className="ri-facebook-fill text-gray-600"></i>
             </a>
           </div>
         </div>
