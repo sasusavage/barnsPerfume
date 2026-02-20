@@ -1,9 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useCMS } from '@/context/CMSContext';
 
 export default function PWASplash() {
   const [showSplash, setShowSplash] = useState(false);
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || '';
+  const siteLogo = getSetting('site_logo') || '';
+  const siteTagline = getSetting('site_tagline') || '';
 
   useEffect(() => {
     // Only show splash in standalone mode
@@ -28,14 +33,16 @@ export default function PWASplash() {
   return (
     <div className="pwa-splash" aria-hidden="true">
       <div className="pwa-splash-logo mb-6">
-        <img
-          src="/logo.png"
-          alt="MultiMey Supplies"
-          className="w-24 h-24 object-contain brightness-0 invert"
-        />
+        {siteLogo && (
+          <img
+            src={siteLogo}
+            alt={siteName}
+            className="w-24 h-24 object-contain brightness-0 invert"
+          />
+        )}
       </div>
-      <h1 className="text-white text-xl font-bold font-serif mb-2">MultiMey Supplies</h1>
-      <p className="text-blue-200 text-sm font-medium mb-8">Dresses, Electronics, Bags & More</p>
+      <h1 className="text-white text-xl font-bold font-serif mb-2">{siteName}</h1>
+      <p className="text-blue-200 text-sm font-medium mb-8">{siteTagline}</p>
       <div className="pwa-splash-dots flex gap-1.5">
         <span className="w-2 h-2 bg-white rounded-full" />
         <span className="w-2 h-2 bg-white rounded-full" />
@@ -44,3 +51,4 @@ export default function PWASplash() {
     </div>
   );
 }
+

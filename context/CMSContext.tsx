@@ -66,20 +66,20 @@ interface CMSContextType {
 }
 
 const defaultSettings: SiteSettings = {
-    site_name: 'MultiMey Supplies',
-    site_tagline: 'Dresses, Electronics, Bags, Shoes & More',
-    site_logo: '/logo.png',
-    contact_email: 'support@multimeysupplies.com',
-    contact_phone: '+233209597443',
-    contact_address: 'Accra, Ghana',
+    site_name: '',
+    site_tagline: '',
+    site_logo: '',
+    contact_email: '',
+    contact_phone: '',
+    contact_address: '',
     social_facebook: '',
-    social_instagram: 'https://www.instagram.com/mey_phua',
-    social_twitter: 'https://x.com/mey_phua',
-    social_tiktok: 'https://www.tiktok.com/@mey_phua',
-    social_snapchat: 'https://snapchat.com/t/eL9wfuQa',
-    social_youtube: 'https://youtube.com/@mey_phua',
-    primary_color: '#059669',
-    secondary_color: '#0D9488',
+    social_instagram: '',
+    social_twitter: '',
+    social_tiktok: '',
+    social_snapchat: '',
+    social_youtube: '',
+    primary_color: '#2563eb',
+    secondary_color: '#FBF6F2',
     currency: 'GHS',
     currency_symbol: 'GH₵',
 };
@@ -96,24 +96,7 @@ const CMSContext = createContext<CMSContextType>({
 });
 
 export function CMSProvider({ children }: { children: ReactNode }) {
-    const [settings, setSettings] = useState<SiteSettings>({
-        site_name: 'MultiMey Supplies',
-        site_tagline: 'Dresses, Electronics, Bags, Shoes & More',
-        site_logo: '/logo.png',
-        contact_email: 'info@multimeysupplies.com',
-        contact_phone: '+233209597443',
-        contact_address: 'Accra, Ghana',
-        social_facebook: '',
-        social_instagram: 'https://www.instagram.com/mey_phua',
-        social_twitter: 'https://x.com/mey_phua',
-        social_tiktok: 'https://www.tiktok.com/@mey_phua',
-        social_snapchat: 'https://snapchat.com/t/eL9wfuQa',
-        social_youtube: 'https://youtube.com/@mey_phua',
-        primary_color: '#2563eb',
-        secondary_color: '#FBF6F2',
-        currency: 'GHS',
-        currency_symbol: 'GH₵',
-    });
+    const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
     const [content, setContent] = useState<CMSContent[]>([]);
     const [banners, setBanners] = useState<Banner[]>([]);
     const [loading, setLoading] = useState(false);

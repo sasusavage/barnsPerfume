@@ -179,7 +179,9 @@ function ShopContent() {
               category: p.categories?.name,
               hasVariants,
               minVariantPrice,
-              colorVariants
+              colorVariants,
+              notes: p.metadata?.scent_notes,
+              origin: p.metadata?.origin
             };
           });
           setProducts(formattedProducts);

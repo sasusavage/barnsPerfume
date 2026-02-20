@@ -8,15 +8,15 @@ function FooterSection({ title, children }: { title: string, children: React.Rea
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-blue-800/50 lg:border-none last:border-0">
+    <div className="border-b border-white/5 lg:border-none last:border-0 overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-4 text-left lg:py-0 lg:cursor-default lg:mb-6"
+        className="w-full flex items-center justify-between py-5 text-left lg:py-0 lg:cursor-default lg:mb-8 group"
       >
-        <h4 className="font-bold text-lg text-white">{title}</h4>
-        <i className={`ri-arrow-down-s-line text-blue-400 text-xl transition-transform duration-300 lg:hidden ${isOpen ? 'rotate-180' : ''}`}></i>
+        <h4 className="font-serif text-xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300">{title}</h4>
+        <i className={`ri-arrow-down-s-line text-gray-500 text-xl transition-transform duration-500 lg:hidden ${isOpen ? 'rotate-180 text-blue-400' : ''}`}></i>
       </button>
-      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-6' : 'max-h-0 lg:max-h-full lg:overflow-visible'}`}>
+      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-96 pb-8' : 'max-h-0 lg:max-h-full lg:overflow-visible'}`}>
         {children}
       </div>
     </div>
@@ -25,105 +25,172 @@ function FooterSection({ title, children }: { title: string, children: React.Rea
 
 export default function Footer() {
   const { getSetting } = useCMS();
+  const [email, setEmail] = useState('');
 
-  const siteName = getSetting('site_name') || 'MultiMey Supplies';
-  const siteLogo = getSetting('site_logo') || '/logo.png';
-  const siteTagline = getSetting('site_tagline') || 'Dresses, Electronics, Bags, Shoes & More.';
+  const siteName = getSetting('site_name') || 'Sasu Labs';
+  const siteLogo = getSetting('site_logo') || '';
+  const siteTagline = getSetting('site_tagline') || 'Quality Products & Supplies';
   const contactEmail = getSetting('contact_email') || '';
-  const contactPhone = getSetting('contact_phone') || '+233209597443';
+  const contactPhone = getSetting('contact_phone') || '+233 209 597 443';
   const socialFacebook = getSetting('social_facebook') || '';
-  const socialInstagram = getSetting('social_instagram') || 'https://www.instagram.com/mey_phua';
-  const socialTwitter = getSetting('social_twitter') || 'https://x.com/mey_phua';
-  const socialTiktok = getSetting('social_tiktok') || 'https://www.tiktok.com/@mey_phua';
-  const socialSnapchat = getSetting('social_snapchat') || 'https://snapchat.com/t/eL9wfuQa';
-  const socialYoutube = getSetting('social_youtube') || 'https://youtube.com/@mey_phua';
+  const socialInstagram = getSetting('social_instagram') || '#';
+  const socialTwitter = getSetting('social_twitter') || '#';
+  const socialTiktok = getSetting('social_tiktok') || '#';
+  const socialSnapchat = getSetting('social_snapchat') || '#';
+  const socialYoutube = getSetting('social_youtube') || '#';
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    alert('Thank you for subscribing!');
+    setEmail('');
+  };
 
   return (
-    <footer className="relative mt-12 z-0">
+    <footer className="relative mt-24 z-0 bg-[#050505]">
 
-      {/* Footer Background Shape */}
-      <div className="absolute inset-0 bg-blue-950 rounded-t-[3rem] -z-10 overflow-hidden">
-        {/* Decorative elements inside footer bg */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-800 to-transparent opacity-30"></div>
+      {/* Mesh Gradient Background */}
+      <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-purple-900 rounded-full blur-[100px]"></div>
       </div>
 
-      <div className="text-white pt-16 pb-12">
+      <div className="relative text-white border-t border-white/5 pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
 
-            {/* Brand Column */}
-            <div className="lg:col-span-1 space-y-6">
-              <Link href="/" className="inline-block group">
-                <img src={siteLogo} alt={siteName} className="h-16 w-auto object-contain drop-shadow-lg group-hover:scale-105 transition-transform duration-300" />
+          {/* Top Newsletter / CTA Section */}
+          <div className="mb-20">
+            <div className="bg-gradient-to-r from-blue-900/40 to-indigo-900/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 p-8 md:p-12 lg:flex items-center justify-between gap-12">
+              <div className="lg:max-w-xl mb-8 lg:mb-0">
+                <h3 className="font-serif text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">
+                  Join the Inner Circle
+                </h3>
+                <p className="text-gray-400 text-lg leading-relaxed">
+                  Subscribe for exclusive early access to New Arrivals, limited edition scents, and special offers delivered to your inbox.
+                </p>
+              </div>
+              <form onSubmit={handleSubscribe} className="flex-1 max-w-md w-full">
+                <div className="relative group">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all text-white placeholder:text-gray-500 pr-36"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-2 bottom-2 bg-blue-600 hover:bg-blue-500 text-white px-6 rounded-xl font-bold text-sm transition-all transform active:scale-95 whitespace-nowrap"
+                  >
+                    Subscribe
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 border-b border-white/5 pb-16">
+
+            {/* Brand Information */}
+            <div className="lg:col-span-4 space-y-8">
+              <Link href="/" className="inline-block group transition-transform duration-500 hover:scale-105">
+                {siteLogo ? (
+                  <img src={siteLogo} alt={siteName} className="h-16 w-auto object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.3)]" />
+                ) : (
+                  <span className="text-3xl font-serif font-bold text-white tracking-tight">{siteName}</span>
+                )}
               </Link>
-              <p className="text-blue-200/60 leading-relaxed text-sm">
-                Your one-stop shop for dresses, electronics, bags, shoes and more. Locally sourced and imported quality products from Accra, Ghana.
-              </p>
+              <div className="space-y-4">
+                <p className="text-gray-400/80 leading-relaxed text-base max-w-sm">
+                  Curating the finest selection of premium scents, fashion, and electronics. Excellence delivered across Ghana.
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <i className="ri-map-pin-line text-blue-500"></i>
+                    <span>Accra, Ghana — Nationwide Delivery</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <i className="ri-mail-line text-blue-500"></i>
+                    <a href={`mailto:${contactEmail}`} className="hover:text-blue-400 transition-colors">{contactEmail || 'support@sasulabs.com'}</a>
+                  </div>
+                </div>
+              </div>
 
-              <div className="flex gap-3 pt-2">
+              {/* Social Grid */}
+              <div className="flex flex-wrap gap-4 pt-4">
                 {[
-                  { link: socialInstagram, icon: 'ri-instagram-line' },
-                  { link: socialTiktok, icon: 'ri-tiktok-fill' },
-                  { link: socialSnapchat, icon: 'ri-snapchat-fill' },
-                  { link: socialYoutube, icon: 'ri-youtube-fill' },
-                  { link: socialTwitter, icon: 'ri-twitter-x-fill' },
-                  { link: socialFacebook, icon: 'ri-facebook-fill' }
+                  { link: socialInstagram, icon: 'ri-instagram-line', label: 'Instagram' },
+                  { link: socialTiktok, icon: 'ri-tiktok-fill', label: 'TikTok' },
+                  { link: socialTwitter, icon: 'ri-twitter-x-fill', label: 'Twitter' },
+                  { link: socialFacebook, icon: 'ri-facebook-fill', label: 'Facebook' },
+                  { link: socialYoutube, icon: 'ri-youtube-fill', label: 'YouTube' }
                 ].map((social, i) => social.link && (
                   <a
                     key={i}
                     href={social.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-blue-900/40 border border-blue-800 rounded-full flex items-center justify-center text-blue-300 hover:bg-blue-500 hover:text-blue-950 hover:border-blue-500 transition-all hover:-translate-y-1"
+                    aria-label={social.label}
+                    className="w-11 h-11 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white hover:border-blue-500 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all transform hover:-translate-y-1.5 duration-300"
                   >
-                    <i className={social.icon}></i>
+                    <i className={`${social.icon} text-lg`}></i>
                   </a>
                 ))}
               </div>
             </div>
 
-            {/* Links Sections */}
-            <div className="lg:col-span-3 grid md:grid-cols-3 gap-8 lg:gap-12 pl-0 lg:pl-12">
-
-              <div className="space-y-6">
-                <h4 className="font-serif text-xl font-bold text-white">Shop</h4>
-                <ul className="space-y-3 text-blue-100/60 text-sm">
-                  <li><Link href="/shop" className="hover:text-blue-300 transition-colors">All Products</Link></li>
-                  <li><Link href="/categories" className="hover:text-blue-300 transition-colors">Collections</Link></li>
-                  <li><Link href="/shop?sort=newest" className="hover:text-blue-300 transition-colors">New Arrivals</Link></li>
-                  <li><Link href="/shop?sort=bestsellers" className="hover:text-blue-300 transition-colors">Best Sellers</Link></li>
+            {/* Navigation Sections */}
+            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-8 md:pl-12">
+              <FooterSection title="Collection">
+                <ul className="space-y-4 text-gray-400 text-sm">
+                  <li><Link href="/shop" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">All Masterpieces</Link></li>
+                  <li><Link href="/shop?category=perfumes" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Signature Scent</Link></li>
+                  <li><Link href="/shop?sort=new" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">New arrivals</Link></li>
+                  <li><Link href="/shop?featured=true" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Limited Editions</Link></li>
                 </ul>
-              </div>
+              </FooterSection>
 
-              <div className="space-y-6">
-                <h4 className="font-serif text-xl font-bold text-white">Support</h4>
-                <ul className="space-y-3 text-blue-100/60 text-sm">
-                  <li><Link href="/contact" className="hover:text-blue-300 transition-colors">Contact Us</Link></li>
-                  <li><Link href="/order-tracking" className="hover:text-blue-300 transition-colors">Track Order</Link></li>
-                  <li><Link href="/shipping" className="hover:text-blue-300 transition-colors">Shipping & Delivery</Link></li>
-                  <li><Link href="/returns" className="hover:text-blue-300 transition-colors">Returns & Exchange</Link></li>
+              <FooterSection title="Assistance">
+                <ul className="space-y-4 text-gray-400 text-sm">
+                  <li><Link href="/contact" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Concierge Service</Link></li>
+                  <li><Link href="/order-tracking" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Track Parcel</Link></li>
+                  <li><Link href="/shipping" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Shipping Policy</Link></li>
+                  <li><Link href="/returns" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Returns & Exchanges</Link></li>
                 </ul>
-              </div>
+              </FooterSection>
 
-              <div className="space-y-6">
-                <h4 className="font-serif text-xl font-bold text-white">Company</h4>
-                <ul className="space-y-3 text-blue-100/60 text-sm">
-                  <li><Link href="/about" className="hover:text-blue-300 transition-colors">Our Story</Link></li>
-                  <li><Link href="/privacy" className="hover:text-blue-300 transition-colors">Privacy Policy</Link></li>
-                  <li><Link href="/terms" className="hover:text-blue-300 transition-colors">Terms of Service</Link></li>
-                  <li><Link href="/admin" className="hover:text-blue-300 transition-colors">Admin Access</Link></li>
+              <FooterSection title="Universe">
+                <ul className="space-y-4 text-gray-400 text-sm">
+                  <li><Link href="/about" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Philosophy</Link></li>
+                  <li><Link href="/privacy" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Privacy & Data</Link></li>
+                  <li><Link href="/terms" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300">Terms of Service</Link></li>
+                  <li><Link href="/admin" className="hover:text-blue-400 hover:translate-x-1 inline-block transition-all duration-300 font-medium">Internal Portal</Link></li>
                 </ul>
-              </div>
-
+              </FooterSection>
             </div>
           </div>
 
-          <div className="border-t border-blue-900/50 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-blue-500/40">
-            <p>&copy; {new Date().getFullYear()} {siteName}. All rights reserved.</p>
-            <div className="flex gap-4 opacity-40">
-              <i className="ri-visa-line text-2xl"></i>
-              <i className="ri-mastercard-line text-2xl"></i>
-              <i className="ri-paypal-line text-2xl"></i>
+          {/* Bottom Bar */}
+          <div className="pt-12 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="text-gray-500 text-xs font-medium tracking-wide">
+              &copy; {new Date().getFullYear()} {siteName.toUpperCase()} — CRAFTED IN GHANA.
+            </div>
+
+            <div className="flex items-center gap-8">
+              {/* Payment Partners */}
+              <div className="flex gap-4 items-center opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+                <i className="ri-visa-line text-2xl"></i>
+                <i className="ri-mastercard-line text-2xl"></i>
+                <i className="ri-paypal-line text-2xl"></i>
+                <img src="https://logowik.com/content/uploads/images/m-pesa2829.jpg" alt="MoMo" className="h-4 w-auto object-contain" />
+              </div>
+
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300"
+              >
+                <i className="ri-arrow-up-line"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -131,3 +198,4 @@ export default function Footer() {
     </footer>
   );
 }
+

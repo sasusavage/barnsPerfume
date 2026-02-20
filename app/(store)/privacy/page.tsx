@@ -1,4 +1,12 @@
+'use client';
+
+import { useCMS } from '@/context/CMSContext';
+
 export default function PrivacyPage() {
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || '';
+  const contactEmail = getSetting('contact_email') || '';
+  const contactPhone = getSetting('contact_phone') || '';
   return (
     <div className="min-h-screen bg-white">
       <div className="bg-gradient-to-br from-blue-50 via-white to-amber-50 py-16">
@@ -17,7 +25,7 @@ export default function PrivacyPage() {
         <div className="prose prose-lg max-w-none">
           <section className="mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">1. Information We Collect</h2>
-            
+
             <h3 className="text-xl font-bold text-gray-900 mb-4 mt-8">1.1 Information You Provide</h3>
             <p className="text-gray-600 leading-relaxed mb-4">
               When you create an account, place an order, or contact us, we collect:
@@ -66,7 +74,7 @@ export default function PrivacyPage() {
             <p className="text-gray-600 leading-relaxed mb-6">
               We use your personal information for the following purposes:
             </p>
-            
+
             <div className="space-y-6">
               <div className="bg-gray-50 p-6 rounded-xl">
                 <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -281,7 +289,7 @@ export default function PrivacyPage() {
             </div>
 
             <p className="text-gray-600 leading-relaxed">
-              To exercise any of these rights, please contact us at <a href="mailto:support@multimeysupplies.com" className="text-blue-700 font-medium hover:underline">support@multimeysupplies.com</a> or through your account settings. We will respond within 30 days.
+              To exercise any of these rights, please contact us at <a href={`mailto:${contactEmail}`} className="text-blue-700 font-medium hover:underline">{contactEmail}</a> or through your account settings. We will respond within 30 days.
             </p>
           </section>
 
@@ -384,7 +392,7 @@ export default function PrivacyPage() {
                   <i className="ri-mail-line text-blue-700 text-xl mt-1"></i>
                   <div>
                     <p className="font-medium text-gray-900">Email</p>
-                    <a href="mailto:support@multimeysupplies.com" className="text-blue-700 hover:underline">support@multimeysupplies.com</a>
+                    <a href={`mailto:${contactEmail}`} className="text-blue-700 hover:underline">{contactEmail}</a>
                   </div>
                 </div>
 
@@ -392,7 +400,7 @@ export default function PrivacyPage() {
                   <i className="ri-phone-line text-blue-700 text-xl mt-1"></i>
                   <div>
                     <p className="font-medium text-gray-900">Phone</p>
-                    <a href="tel:+233209597443" className="text-blue-700 hover:underline">+233 20 959 7443</a>
+                    <a href={`tel:${contactPhone}`} className="text-blue-700 hover:underline">{contactPhone}</a>
                   </div>
                 </div>
 
@@ -400,7 +408,7 @@ export default function PrivacyPage() {
                   <i className="ri-map-pin-line text-blue-700 text-xl mt-1"></i>
                   <div>
                     <p className="font-medium text-gray-900">Address</p>
-                    <p className="text-gray-600">MultiMey Supplies<br />Accra, Ghana</p>
+                    <p className="text-gray-600">{siteName}<br />Accra, Ghana</p>
                   </div>
                 </div>
               </div>

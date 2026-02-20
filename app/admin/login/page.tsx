@@ -5,8 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useRecaptcha } from '@/hooks/useRecaptcha';
+import { useCMS } from '@/context/CMSContext';
 
 export default function AdminLoginPage() {
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || '';
+  const siteLogo = getSetting('site_logo') || '';
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,7 +60,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <img src="/logo.png" alt="MultiMey Supplies" className="h-12 w-auto mx-auto" />
+            {siteLogo && <img src={siteLogo} alt={siteName} className="h-12 w-auto mx-auto" />}
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 mt-6 mb-2">Admin Login</h1>
           <p className="text-gray-600">Sign in to access the admin dashboard</p>

@@ -15,11 +15,11 @@ export const viewport: Viewport = {
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.multimeysupplies.com';
 
-export async function generateMetadata(): Promise<Metadata> {
-  // Default values
-  let siteName = 'MultiMey Supplies';
+async function getSiteSettings() {
+  let siteName = 'Sasu Labs';
   let siteTagline = 'Quality Products & Supplies';
-  let siteDescription = "Shop dresses, electronics, bags, shoes & more at MultiMey Supplies. Locally sourced and imported quality products delivered across Ghana from Accra.";
+  let siteDescription = "Shop quality products delivered across Ghana.";
+  let siteLogo = '/logo.png';
 
   try {
     const { data } = await supabase.from('site_settings').select('key, value');
@@ -32,10 +32,17 @@ export async function generateMetadata(): Promise<Metadata> {
       if (settings.site_name) siteName = settings.site_name;
       if (settings.site_tagline) siteTagline = settings.site_tagline;
       if (settings.site_description) siteDescription = settings.site_description;
+      if (settings.site_logo) siteLogo = settings.site_logo;
     }
   } catch (e) {
     // Fail gracefully to defaults
   }
+
+  return { siteName, siteTagline, siteDescription, siteLogo };
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { siteName, siteTagline, siteDescription } = await getSiteSettings();
 
   return {
     metadataBase: new URL(siteUrl),
@@ -134,11 +141,12 @@ const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 // Google reCAPTCHA v3 Site Key
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { siteName, siteDescription, siteLogo } = await getSiteSettings();
   return (
     <html lang="en">
       <head>
@@ -146,7 +154,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#2563eb" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="MultiMey Supplies" />
+        <meta name="apple-mobile-web-app-title" content={siteName} />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-TileColor" content="#2563eb" />
         <meta name="msapplication-tap-highlight" content="no" />
@@ -175,10 +183,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "MultiMey Supplies",
-              "url": "https://www.multimeysupplies.com",
-              "logo": "https://www.multimeysupplies.com/logo.png",
-              "description": "Shop dresses, electronics, bags, shoes and more at MultiMey Supplies. Locally sourced and China-imported quality products delivered across Ghana from Accra.",
+              "name": siteName,
+              "url": siteUrl,
+              "logo": siteLogo.startsWith('http') ? siteLogo : `${siteUrl}${siteLogo}`,
+              "description": siteDescription,
               "address": {
                 "@type": "PostalAddress",
                 "addressCountry": "GH",

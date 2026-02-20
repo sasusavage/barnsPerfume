@@ -24,6 +24,8 @@ export default function ProductForm({ initialData, isEditMode = false }: Product
     const [moq, setMoq] = useState(initialData?.moq || '1');
     const [lowStockThreshold, setLowStockThreshold] = useState(initialData?.metadata?.low_stock_threshold || '5');
     const [description, setDescription] = useState(initialData?.description || '');
+    const [scentNotes, setScentNotes] = useState(initialData?.metadata?.scent_notes || '');
+    const [productOrigin, setProductOrigin] = useState(initialData?.metadata?.origin || '');
     const [status, setStatus] = useState(initialData?.status || 'Active');
     const [featured, setFeatured] = useState(initialData?.featured || false);
     const [preorderShipping, setPreorderShipping] = useState(initialData?.metadata?.preorder_shipping || '');
@@ -296,7 +298,9 @@ export default function ProductForm({ initialData, isEditMode = false }: Product
                 tags: (keywords as string).split(',').map((k: string) => k.trim()).filter(Boolean),
                 metadata: {
                     low_stock_threshold: parseInt(lowStockThreshold) || 5,
-                    preorder_shipping: preorderShipping.trim() || null
+                    preorder_shipping: preorderShipping.trim() || null,
+                    scent_notes: scentNotes.trim() || null,
+                    origin: productOrigin.trim() || null
                 }
             };
 
@@ -542,6 +546,38 @@ export default function ProductForm({ initialData, isEditMode = false }: Product
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Leave empty if product ships immediately. Otherwise, enter estimated shipping time.</p>
                             </div>
+
+                            <div className="pt-6 border-t border-gray-100">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4">Scent Profile & Origin</h3>
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                            Scent Notes (for Perfumes)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={scentNotes}
+                                            onChange={(e) => setScentNotes(e.target.value)}
+                                            placeholder="Top: Citrus, Heart: Floral, Base: Musk"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Displayed on the product card hover effect.</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                            Product Origin Label
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={productOrigin}
+                                            onChange={(e) => setProductOrigin(e.target.value)}
+                                            placeholder="98% Locally Sourced - Accra"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Small badge above the product name.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -717,8 +753,8 @@ export default function ProductForm({ initialData, isEditMode = false }: Product
                                                 key={color.name}
                                                 onClick={() => toggleColor(color)}
                                                 className={`flex items-center space-x-2 px-3 py-2 rounded-lg border-2 transition-all text-sm font-medium ${isSelected
-                                                        ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600'
-                                                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                                                    ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600'
+                                                    : 'border-gray-200 hover:border-gray-300 bg-white'
                                                     }`}
                                                 title={color.name}
                                             >
@@ -796,8 +832,8 @@ export default function ProductForm({ initialData, isEditMode = false }: Product
                                                 key={size}
                                                 onClick={() => toggleSize(size)}
                                                 className={`px-5 py-2.5 rounded-lg border-2 font-semibold text-sm transition-all ${isSelected
-                                                        ? 'border-blue-600 bg-blue-50 text-blue-800 ring-1 ring-blue-600'
-                                                        : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                                                    ? 'border-blue-600 bg-blue-50 text-blue-800 ring-1 ring-blue-600'
+                                                    : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
                                                     }`}
                                             >
                                                 {size}

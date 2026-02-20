@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import LazyImage from './LazyImage';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 
 // Map common color names to hex values
 const COLOR_MAP: Record<string, string> = {
@@ -74,10 +75,12 @@ export default function ProductCard({
   hasVariants = false,
   minVariantPrice,
   colorVariants = [],
-  notes = "Top: Citrus, Heart: Floral, Base: Musk", // Fallback Mock
-  origin = "98% Locally Sourced - Accra"
+  notes,
+  origin
 }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(id);
   const [activeColor, setActiveColor] = useState<string | null>(null);
   const displayPrice = hasVariants && minVariantPrice ? minVariantPrice : price;
   const discount = originalPrice ? Math.round((1 - displayPrice / originalPrice) * 100) : 0;
@@ -100,12 +103,14 @@ export default function ProductCard({
           </div>
 
           {/* Scent Notes Overlay (Hover) */}
-          <div className="absolute inset-0 bg-ebony/70 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center text-center p-6 text-white translate-y-4 group-hover:translate-y-0 z-10">
-            <h4 className="font-serif text-2xl text-champagne-gold mb-3 italic">Notes</h4>
-            <p className="text-sm font-light leading-relaxed opacity-90">{notes}</p>
-            <div className="w-8 h-px bg-champagne-gold/50 my-4"></div>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/60">View Scent Profile</span>
-          </div>
+          {notes && (
+            <div className="absolute inset-0 bg-ebony/70 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center text-center p-6 text-white translate-y-4 group-hover:translate-y-0 z-10">
+              <h4 className="font-serif text-2xl text-champagne-gold mb-3 italic">Notes</h4>
+              <p className="text-sm font-light leading-relaxed opacity-90">{notes}</p>
+              <div className="w-8 h-px bg-champagne-gold/50 my-4"></div>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white/60">View Scent Profile</span>
+            </div>
+          )}
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
@@ -125,17 +130,47 @@ export default function ProductCard({
               </span>
             )}
           </div>
+
+          {/* Wishlist Button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (isWishlisted) {
+                removeFromWishlist(id);
+              } else {
+                addToWishlist({
+                  id,
+                  name,
+                  price,
+                  originalPrice,
+                  image,
+                  rating,
+                  inStock: inStock || false,
+                  slug,
+                  notes,
+                  origin
+                });
+              }
+            }}
+            className={`absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full shadow-md transition-all duration-300 z-20 ${isWishlisted ? 'bg-red-50 text-red-500' : 'bg-white/80 text-gray-400 hover:text-red-500 hover:bg-white'
+              } backdrop-blur-md border border-white/40 group/wishlist`}
+          >
+            <i className={`${isWishlisted ? 'ri-heart-fill' : 'ri-heart-line'} text-lg group-hover/wishlist:scale-110 transition-transform`}></i>
+          </button>
         </Link>
 
         {/* Content Body */}
         <div className="flex flex-col flex-grow px-5 pb-5 pt-3 text-center">
 
           {/* Origin Label */}
-          <div className="mb-2">
-            <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-gray-400 border border-gray-100 rounded-full px-2 py-0.5 bg-white/50">
-              {origin}
-            </span>
-          </div>
+          {origin && (
+            <div className="mb-2">
+              <span className="inline-block text-[10px] uppercase tracking-[0.2em] text-gray-400 border border-gray-100 rounded-full px-2 py-0.5 bg-white/50">
+                {origin}
+              </span>
+            </div>
+          )}
 
           <Link href={`/product/${slug}`} className="group/title">
             <h3 className="font-serif text-lg text-ebony mb-1 group-hover/title:text-champagne-dark transition-colors line-clamp-1">
@@ -162,8 +197,8 @@ export default function ProductCard({
                     setActiveColor(activeColor === color.name ? null : color.name);
                   }}
                   className={`w-3 h-3 rounded-full border transition-all duration-300 ${activeColor === color.name
-                      ? 'scale-125 ring-1 ring-offset-2 ring-champagne-gold'
-                      : 'hover:scale-125'
+                    ? 'scale-125 ring-1 ring-offset-2 ring-champagne-gold'
+                    : 'hover:scale-125'
                     } ${color.hex === '#FFFFFF' ? 'border-gray-300' : 'border-transparent'}`}
                   style={{ backgroundColor: color.hex }}
                 />

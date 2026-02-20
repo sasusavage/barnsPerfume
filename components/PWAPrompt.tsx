@@ -2,10 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { usePWAInstall } from './PWAInstaller';
+import { useCMS } from '@/context/CMSContext';
 
 export default function PWAPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const { canInstall, isInstalled, install } = usePWAInstall();
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || '';
+  const siteLogo = getSetting('site_logo') || '';
+  const siteUrl = typeof window !== 'undefined' ? window.location.hostname : '';
 
   useEffect(() => {
     if (isInstalled || !canInstall) return;
@@ -54,15 +59,17 @@ export default function PWAPrompt() {
             {/* App icon and info */}
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg flex-shrink-0 bg-blue-50 flex items-center justify-center">
-                <img
-                  src="/logo.png"
-                  alt="MultiMey Supplies"
-                  className="w-14 h-14 object-contain"
-                />
+                {siteLogo && (
+                  <img
+                    src={siteLogo}
+                    alt={siteName}
+                    className="w-14 h-14 object-contain"
+                  />
+                )}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-lg truncate">MultiMey Supplies</h3>
-                <p className="text-sm text-gray-500">multimeysupplies.com</p>
+                <h3 className="font-bold text-gray-900 text-lg truncate">{siteName}</h3>
+                <p className="text-sm text-gray-500">{siteUrl}</p>
                 <div className="flex items-center gap-1 mt-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <i key={star} className="ri-star-fill text-amber-400 text-xs" />

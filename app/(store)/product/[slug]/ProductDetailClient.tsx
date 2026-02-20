@@ -11,6 +11,8 @@ import { StructuredData, generateProductSchema, generateBreadcrumbSchema } from 
 import { notFound } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useCMS } from '@/context/CMSContext';
+import { useWishlist } from '@/context/WishlistContext';
 
 // Map common color names to hex values for the swatch preview
 function colorNameToHex(name: string): string {
@@ -28,6 +30,10 @@ function colorNameToHex(name: string): string {
 }
 
 export default function ProductDetailClient({ slug }: { slug: string }) {
+  const { getSetting } = useCMS();
+  const siteName = getSetting('site_name') || 'Brand';
+  const siteUrl = getSetting('site_url') || (typeof window !== 'undefined' ? window.location.origin : '');
+
   const [product, setProduct] = useState<any>(null);
   usePageTitle(product?.name || 'Product');
   const [loading, setLoading] = useState(true);
@@ -37,10 +43,11 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
   const { addToCart } = useCart();
+  const { wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const isWishlisted = product ? isInWishlist(product.id) : false;
 
   useEffect(() => {
     async function fetchProduct() {
@@ -164,7 +171,9 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                 maxStock: effectiveStock || 50,
                 moq: p.moq || 1,
                 hasVariants,
-                minVariantPrice
+                minVariantPrice,
+                notes: p.metadata?.scent_notes,
+                origin: p.metadata?.origin
               };
             }));
           }
@@ -225,6 +234,26 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
     window.location.href = '/checkout';
   };
 
+  const toggleWishlist = () => {
+    if (!product) return;
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: activePrice,
+        originalPrice: product.compare_at_price,
+        image: product.images[0],
+        rating: product.rating,
+        inStock: activeStock > 0,
+        slug: product.slug,
+        notes: product.metadata?.scent_notes,
+        origin: product.metadata?.origin
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white py-12 flex justify-center items-center">
@@ -260,14 +289,15 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
     rating: product.rating,
     reviewCount: product.reviewCount,
     availability: product.quantity > 0 ? 'in_stock' : 'out_of_stock',
-    category: product.category
+    category: product.category,
+    siteName
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://standardecom.com' },
-    { name: 'Shop', url: 'https://standardecom.com/shop' },
-    { name: product.category, url: `https://standardecom.com/shop?category=${product.category.toLowerCase().replace(/\s+/g, '-')}` },
-    { name: product.name, url: `https://standardecom.com/product/${slug}` }
+    { name: 'Home', url: siteUrl },
+    { name: 'Shop', url: `${siteUrl}/shop` },
+    { name: product.category, url: `${siteUrl}/shop?category=${product.category.toLowerCase().replace(/\s+/g, '-')}` },
+    { name: product.name, url: `${siteUrl}/product/${slug}` }
   ]);
 
   return (
@@ -341,7 +371,7 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                     <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">{product.name}</h1>
                   </div>
                   <button
-                    onClick={() => setIsWishlisted(!isWishlisted)}
+                    onClick={toggleWishlist}
                     className="w-12 h-12 flex items-center justify-center border-2 border-gray-200 hover:border-blue-700 rounded-full transition-colors cursor-pointer"
                   >
                     <i className={`${isWishlisted ? 'ri-heart-fill text-red-600' : 'ri-heart-line text-gray-700'} text-xl`}></i>

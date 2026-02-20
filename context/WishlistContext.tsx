@@ -13,6 +13,8 @@ export type WishlistItem = {
     badge?: string;
     inStock: boolean;
     slug: string;
+    notes?: string;
+    origin?: string;
 };
 
 type WishlistContextType = {

@@ -17,8 +17,8 @@ export default function Header() {
 
   const { cartCount, isCartOpen, setIsCartOpen } = useCart();
   const { getSetting } = useCMS();
-  const siteName = getSetting('site_name') || 'MultiMey Supplies';
-  const siteLogo = getSetting('site_logo') || '/logo.png';
+  const siteName = getSetting('site_name') || '';
+  const siteLogo = getSetting('site_logo') || '';
 
   useEffect(() => {
     // Wishlist logic
@@ -63,7 +63,7 @@ export default function Header() {
         <div className="safe-area-top" />
         <nav aria-label="Main navigation" className="relative">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="py-4 grid grid-cols-[auto_1fr_auto] items-center gap-4">
+            <div className="h-20 grid grid-cols-[auto_1fr_auto] items-center gap-4">
 
               {/* Left: Mobile Menu Trigger (Mobile) & Logo */}
               <div className="flex items-center gap-4">
@@ -79,8 +79,8 @@ export default function Header() {
                   className="flex items-center select-none gap-3"
                   aria-label="Go to homepage"
                 >
-                  <img src={siteLogo} alt={siteName} className="h-12 md:h-16 w-auto object-contain" />
-                  <span className="hidden sm:block text-xl md:text-2xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
+                  {siteLogo && <img src={siteLogo} alt={siteName} className="h-14 md:h-20 w-auto object-contain" />}
+                  <span className="hidden sm:block text-2xl md:text-3xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
                 </Link>
               </div>
 
@@ -214,8 +214,8 @@ export default function Header() {
           <div className="absolute top-0 left-0 bottom-0 w-4/5 max-w-xs bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
               <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2">
-                <img src={siteLogo} alt={siteName} className="h-8 w-auto object-contain" />
-                <span className="text-xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
+                <img src={siteLogo} alt={siteName} className="h-12 w-auto object-contain" />
+                <span className="text-2xl font-['Pacifico'] text-blue-700 pt-1">{siteName}</span>
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}

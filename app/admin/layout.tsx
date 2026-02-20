@@ -23,7 +23,7 @@ export default function AdminLayout({
   // Module Filtering State
   const [enabledModules, setEnabledModules] = useState<string[]>([]);
   const { getSetting } = useCMS();
-  const siteName = getSetting('site_name') || 'MultiMey';
+  const siteName = getSetting('site_name') || '';
 
   useEffect(() => {
     async function checkAuth() {

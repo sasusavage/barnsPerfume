@@ -10,12 +10,12 @@ import AnimatedSection, { AnimatedGrid } from '@/components/AnimatedSection';
 import NewsletterSection from '@/components/NewsletterSection';
 import { useCMS } from '@/context/CMSContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import CinematicCategory from '@/components/CinematicCategory';
 
 export default function Home() {
   usePageTitle('');
   const { getSetting } = useCMS();
-  const logo = getSetting('site_logo');
+  const siteLogo = getSetting('site_logo') || '';
+  const siteName = getSetting('site_name') || '';
 
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -121,7 +121,7 @@ export default function Home() {
 
   const getHeroImage = () => {
     if (config.hero.backgroundImage) return config.hero.backgroundImage;
-    return logo || "/logo.png";
+    return siteLogo;
   };
 
   const renderBanners = () => {
@@ -177,10 +177,10 @@ export default function Home() {
                 />
               )}
 
-              <div className="absolute inset-0 bg-black/20 z-[1]"></div> {/* 20% black overlay */}
+              <div className="absolute inset-0 bg-black/20 z-[5]"></div> {/* 20% black overlay */}
 
               {/* Slide Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px] z-[2]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto mt-[-50px]">
                 <p
                   key={`tag-${currentSlide}`}
                   className="text-white/90 text-sm md:text-base tracking-[0.2em] uppercase font-medium mb-6 animate-fade-in-up"
@@ -227,8 +227,8 @@ export default function Home() {
           ))
         ) : (
           // Fallback/Loading State
-          <div className="absolute inset-0 bg-black flex items-center justify-center">
-            <div className="text-white">Loading...</div>
+          <div className="absolute inset-0 bg-stone-900 flex items-center justify-center">
+            {siteLogo && <Image src={siteLogo} alt="Loading" width={200} height={200} className="opacity-20 animate-pulse object-contain" />}
           </div>
         )}
 
@@ -262,8 +262,54 @@ export default function Home() {
 
       </section>
 
-      {/* Cinematic Categories Section */}
-      <CinematicCategory categories={categories} />
+      {/* Categories Section */}
+      <section className="py-12 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <AnimatedSection className="flex items-end justify-between mb-12">
+            <div>
+              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gray-900 mb-4">Shop by Category</h2>
+              <p className="text-gray-600 text-lg max-w-md">From dresses to electronics, bags to shoes</p>
+            </div>
+            <Link href="/categories" className="hidden md:flex items-center text-blue-800 font-medium hover:text-blue-900 transition-colors">
+              View All <i className="ri-arrow-right-line ml-2"></i>
+            </Link>
+          </AnimatedSection>
+
+          <AnimatedGrid className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {categories.map((category) => (
+              <Link href={`/shop?category=${category.slug}`} key={category.id} className="group cursor-pointer block relative">
+                <div className="aspect-[3/4] rounded-2xl overflow-hidden relative shadow-md group-hover:shadow-xl transition-all duration-300">
+                  <Image
+                    src={category.image || category.image_url || 'https://via.placeholder.com/600x800?text=' + encodeURIComponent(category.name)}
+                    alt={category.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    quality={75}
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end h-full">
+                    <h3 className="font-serif font-bold text-white text-xl md:text-2xl mb-1 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{category.name}</h3>
+                    <div className="flex items-center text-white/90 text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 delay-75">
+                      <span className="uppercase tracking-wider text-xs">Shop Now</span>
+                      <i className="ri-arrow-right-line ml-2 transition-transform group-hover:translate-x-1"></i>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </AnimatedGrid>
+
+          <div className="mt-8 text-center md:hidden">
+            <Link href="/categories" className="inline-flex items-center text-blue-800 font-medium hover:text-blue-900 transition-colors">
+              View All <i className="ri-arrow-right-line ml-2"></i>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Featured Products */}
       <section className="py-16 md:py-24 bg-stone-50">
@@ -320,6 +366,8 @@ export default function Home() {
                     hasVariants={hasVariants}
                     minVariantPrice={minVariantPrice}
                     colorVariants={colorVariants}
+                    notes={product.metadata?.scent_notes}
+                    origin={product.metadata?.origin}
                   />
                 );
               })}
