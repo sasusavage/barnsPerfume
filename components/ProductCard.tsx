@@ -94,11 +94,11 @@ export default function ProductCard({
 
         {/* Image Container with Overlay */}
         <Link href={`/product/${slug}`} className="relative block aspect-[4/5] overflow-hidden bg-gradient-to-b from-transparent to-gray-50/30">
-          <div className="absolute inset-0 flex items-center justify-center p-8 transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-rotate-1">
+          <div className="absolute inset-0 flex items-center justify-center p-2 transition-transform duration-700 ease-out group-hover:scale-110 group-hover:-rotate-1">
             <LazyImage
               src={image}
               alt={name}
-              className="w-full h-full object-contain drop-shadow-xl transition-all duration-500"
+              className="w-full h-full object-contain drop-shadow-2xl transition-all duration-500"
             />
           </div>
 

@@ -57,37 +57,6 @@ export default function Footer() {
       <div className="relative text-white border-t border-white/5 pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-          {/* Top Newsletter / CTA Section */}
-          <div className="mb-20">
-            <div className="bg-gradient-to-r from-blue-900/40 to-indigo-900/40 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 p-8 md:p-12 lg:flex items-center justify-between gap-12">
-              <div className="lg:max-w-xl mb-8 lg:mb-0">
-                <h3 className="font-serif text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">
-                  Join the Inner Circle
-                </h3>
-                <p className="text-gray-400 text-lg leading-relaxed">
-                  Subscribe for exclusive early access to New Arrivals, limited edition scents, and special offers delivered to your inbox.
-                </p>
-              </div>
-              <form onSubmit={handleSubscribe} className="flex-1 max-w-md w-full">
-                <div className="relative group">
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all text-white placeholder:text-gray-500 pr-36"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-2 bottom-2 bg-blue-600 hover:bg-blue-500 text-white px-6 rounded-xl font-bold text-sm transition-all transform active:scale-95 whitespace-nowrap"
-                  >
-                    Subscribe
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 border-b border-white/5 pb-16">
 

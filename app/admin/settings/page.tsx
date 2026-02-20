@@ -17,7 +17,9 @@ export default function SiteSettings() {
         contact_address: '',
         site_logo: '',
         site_tagline: '',
-        social_instagram: ''
+        social_instagram: '',
+        announcement_text: '',
+        announcement_bg_color: '#1e40af'
     });
 
     useEffect(() => {
@@ -248,6 +250,40 @@ export default function SiteSettings() {
                                     className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="https://instagram.com/..."
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr className="border-gray-100" />
+
+                    {/* Announcement Bar */}
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="col-span-1">
+                            <h3 className="text-lg font-semibold text-gray-900">Announcement Bar</h3>
+                            <p className="text-sm text-gray-500 mt-1">Configure the top bar notification.</p>
+                        </div>
+                        <div className="col-span-2 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Announcement Text</label>
+                                <input
+                                    type="text"
+                                    value={settings.announcement_text}
+                                    onChange={(e) => handleChange('announcement_text', e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Free Store Pickup Available..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="color"
+                                        value={settings.announcement_bg_color}
+                                        onChange={(e) => handleChange('announcement_bg_color', e.target.value)}
+                                        className="h-10 w-20 p-1 border border-gray-300 rounded cursor-pointer"
+                                    />
+                                    <span className="text-sm font-mono text-gray-600 uppercase">{settings.announcement_bg_color}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

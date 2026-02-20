@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useCMS } from '@/context/CMSContext';
 import Link from 'next/link';
 
 interface Banner {
@@ -71,11 +72,18 @@ export default function AnnouncementBar() {
 
     const visibleBanners = banners.filter(b => !dismissed.has(b.id));
 
+    const { getSetting } = useCMS();
+    const defaultText = getSetting('announcement_text') || 'Free Store Pickup Available | Order Online, Pick Up Today';
+    const defaultBg = getSetting('announcement_bg_color') || '#1e40af';
+
     if (visibleBanners.length === 0) {
         // Show default banner if no custom banners
         return (
-            <div className="bg-blue-800 text-white py-2 text-center text-sm">
-                <p>Free Store Pickup Available | Order Online, Pick Up Today</p>
+            <div
+                className="text-white py-2 text-center text-sm"
+                style={{ backgroundColor: defaultBg }}
+            >
+                <p>{defaultText}</p>
             </div>
         );
     }
