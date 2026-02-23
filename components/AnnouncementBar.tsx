@@ -73,7 +73,7 @@ export default function AnnouncementBar() {
     const visibleBanners = banners.filter(b => !dismissed.has(b.id));
 
     const { getSetting } = useCMS();
-    const defaultText = getSetting('announcement_text') || 'Free Store Pickup Available | Order Online, Pick Up Today';
+    const defaultText = getSetting('announcement_text') || '🚚 Fast 24 - 48 Hours Nationwide Delivery | Quality Guaranteed';
     const defaultBg = getSetting('announcement_bg_color') || '#1e40af';
 
     if (visibleBanners.length === 0) {

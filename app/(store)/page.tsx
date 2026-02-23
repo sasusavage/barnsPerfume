@@ -234,19 +234,19 @@ export default function Home() {
 
         {/* Bottom Features (Desktop) */}
         <div className="absolute bottom-12 left-0 right-0 z-20 hidden md:flex justify-center items-center gap-16 text-white text-center">
-          <div>
+          <div className="group transition-transform hover:scale-105">
+            <p className="font-serif text-lg font-medium">Fast Delivery</p>
+            <p className="text-xs text-blue-400 font-bold tracking-wider uppercase mt-1">24 - 48 Hours Nationwide</p>
+          </div>
+          <div className="w-px h-10 bg-white/20"></div>
+          <div className="group transition-transform hover:scale-105">
             <p className="font-serif text-lg font-medium">Direct Import</p>
             <p className="text-xs text-white/60 font-light tracking-wide uppercase mt-1">From China &amp; Local Suppliers</p>
           </div>
           <div className="w-px h-10 bg-white/20"></div>
-          <div>
+          <div className="group transition-transform hover:scale-105">
             <p className="font-serif text-lg font-medium">Verified Quality</p>
             <p className="text-xs text-white/60 font-light tracking-wide uppercase mt-1">Every Item Checked</p>
-          </div>
-          <div className="w-px h-10 bg-white/20"></div>
-          <div>
-            <p className="font-serif text-lg font-medium">Best Prices</p>
-            <p className="text-xs text-white/60 font-light tracking-wide uppercase mt-1">Wholesale &amp; Retail</p>
           </div>
         </div>
 

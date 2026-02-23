@@ -75,8 +75,8 @@ export default function Footer() {
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <i className="ri-map-pin-line text-blue-500"></i>
-                    <span>Accra, Ghana — Nationwide Delivery</span>
+                    <i className="ri-truck-line text-blue-500"></i>
+                    <span>24 - 48 Hours Nationwide Delivery</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-500">
                     <i className="ri-mail-line text-blue-500"></i>

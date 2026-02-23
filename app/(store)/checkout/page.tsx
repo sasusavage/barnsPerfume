@@ -178,20 +178,20 @@ export default function CheckoutPage() {
       // 2. Create Order Items (with UUID validation)
       // Helper to check if string is a valid UUID
       const isValidUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
-      
+
       // Build order items, resolving slugs to UUIDs if needed
       const orderItems = [];
-      
+
       // Batch-fetch product metadata (for preorder_shipping etc.)
       const productIds = cart.map(item => item.id).filter(id => isValidUUID(id));
       const { data: productsData } = productIds.length > 0
         ? await supabase.from('products').select('id, metadata').in('id', productIds)
         : { data: [] };
       const productMetaMap = new Map((productsData || []).map((p: any) => [p.id, p.metadata]));
-      
+
       for (const item of cart) {
         let productId = item.id;
-        
+
         // If id is not a valid UUID, it might be a slug - try to resolve it
         if (!isValidUUID(productId)) {
           const { data: product } = await supabase
@@ -199,7 +199,7 @@ export default function CheckoutPage() {
             .select('id, metadata')
             .or(`slug.eq.${productId},id.eq.${productId}`)
             .single();
-          
+
           if (product) {
             productId = product.id;
             productMetaMap.set(product.id, product.metadata);
@@ -207,9 +207,9 @@ export default function CheckoutPage() {
             throw new Error(`Product not found: ${item.name}. Please remove it from your cart and try again.`);
           }
         }
-        
+
         const prodMeta = productMetaMap.get(productId);
-        
+
         orderItems.push({
           order_id: order.id,
           product_id: productId,
@@ -544,7 +544,7 @@ export default function CheckoutPage() {
                         />
                         <div>
                           <p className="font-semibold text-gray-900">Store Pickup</p>
-                          <p className="text-sm text-gray-600">Pick up from our store — Ready in 24 hours</p>
+                          <p className="text-sm text-gray-600">Pick up from our store — <span className="text-blue-700 font-bold">Ready within 24 hours</span></p>
                         </div>
                       </div>
                       <p className="font-bold text-blue-700">FREE</p>
@@ -563,7 +563,7 @@ export default function CheckoutPage() {
                         />
                         <div>
                           <p className="font-semibold text-gray-900">Doorstep Delivery</p>
-                          <p className="text-sm text-gray-600">We will contact you with the delivery cost</p>
+                          <p className="text-sm text-gray-600"><span className="text-blue-700 font-bold">Fast 24 - 48h Nationwide</span> — We will contact you for cost</p>
                         </div>
                       </div>
                       <p className="font-semibold text-amber-600 text-sm">At a Cost</p>

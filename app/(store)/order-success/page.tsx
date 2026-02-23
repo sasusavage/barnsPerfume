@@ -50,17 +50,17 @@ function OrderSuccessContent() {
   // Payment verification - called when user is redirected from Moolre with payment_success=true
   const verifyPayment = async (orderNum: string, initialOrder: any) => {
     setVerifying(true);
-    
+
     // Wait 3 seconds to give the callback a chance to process first
     await new Promise(resolve => setTimeout(resolve, 3000));
-    
+
     // Re-fetch order to check if callback already updated it
     const { data: refreshed } = await supabase
       .from('orders')
       .select('*, order_items (*)')
       .eq('order_number', orderNum)
       .single();
-    
+
     if (refreshed?.payment_status === 'paid') {
       setOrder(refreshed);
       setVerifying(false);
@@ -75,10 +75,10 @@ function OrderSuccessContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderNumber: orderNum })
       });
-      
+
       const result = await res.json();
       console.log('Payment verification result:', result);
-      
+
       if (result.success && result.payment_status === 'paid') {
         // Re-fetch full order data
         const { data: updated } = await supabase
@@ -123,7 +123,7 @@ function OrderSuccessContent() {
   }
 
   const orderDate = new Date(order.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  const estimatedDelivery = new Date(new Date(order.created_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const estimatedDelivery = new Date(new Date(order.created_at).getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   const pointsEarned = Math.floor(order.total / 10); // Example logic: 1 point per 10 currency units
 
   return (
@@ -302,8 +302,8 @@ function OrderSuccessContent() {
                   <div className="flex items-start space-x-3">
                     <i className="ri-box-3-line text-blue-700 mt-1"></i>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">Processing</p>
-                      <p className="text-sm text-gray-600">We'll pack your order today</p>
+                      <p className="text-sm font-semibold text-gray-900">Fast Fulfillment</p>
+                      <p className="text-sm text-gray-600">Dispatched within 24 - 48 hours</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">

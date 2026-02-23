@@ -131,6 +131,13 @@ export default function MiniCart({ isOpen, onClose }: MiniCartProps) {
                 <span className="text-2xl font-bold text-gray-900">GH₵{subtotal.toFixed(2)}</span>
               </div>
 
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-4 flex items-center gap-3">
+                <i className="ri-truck-line text-blue-700 text-xl"></i>
+                <p className="text-xs text-blue-700 font-bold leading-tight uppercase">
+                  Fast 24 - 48 Hours Nationwide Delivery
+                </p>
+              </div>
+
               <p className="text-sm text-gray-600 mb-4 text-center">
                 Shipping calculated at checkout
               </p>

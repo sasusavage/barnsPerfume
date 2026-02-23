@@ -4,50 +4,44 @@ export default function ShippingPage() {
   const deliveryOptions = [
     {
       type: 'Standard Delivery',
-      time: '2-5 Business Days',
+      time: '24 - 48 Hours',
       cost: 'GHS 20',
-      description: 'Perfect for regular orders with no rush',
+      description: 'Reliable delivery to your doorstep across Ghana',
       icon: 'ri-truck-line'
     },
     {
       type: 'Express Delivery',
-      time: 'Next Day',
+      time: 'Within 24 Hours',
       cost: 'GHS 40',
-      description: 'Available for Accra & Kumasi orders placed before 2pm',
+      description: 'Priority handling for Accra & Kumasi orders',
       icon: 'ri-rocket-line'
     },
     {
       type: 'Store Pickup',
-      time: 'Same Day',
+      time: 'Instant',
       cost: 'FREE',
-      description: 'Collect from our Accra location',
+      description: 'Collect from our Accra location immediately',
       icon: 'ri-store-2-line'
     }
   ];
 
   const zones = [
     {
-      zone: 'Zone 1 - Accra Metro',
-      areas: 'East Legon, Osu, Labone, Airport, Dzorwulu, Cantonments, Adabraka, Tema',
-      standard: '1-2 days',
-      express: 'Next day'
+      zone: 'Zone 1 - Accra & Kumasi',
+      areas: 'All locations within Accra Metro and Kumasi City',
+      standard: '24 hours',
+      express: 'Same day'
     },
     {
-      zone: 'Zone 2 - Greater Accra',
-      areas: 'Madina, Legon, Haatso, Achimota, Dansoman, Spintex, Teshie, Kasoa',
-      standard: '2-3 days',
-      express: 'Next day'
+      zone: 'Zone 2 - Regional Capitals',
+      areas: 'Takoradi, Cape Coast, Tamale, Sunyani, Ho, Koforidua',
+      standard: '24 - 48 hours',
+      express: '24 hours'
     },
     {
-      zone: 'Zone 3 - Major Cities',
-      areas: 'Kumasi, Takoradi, Cape Coast, Tamale, Sunyani, Ho, Koforidua',
-      standard: '3-4 days',
-      express: '1-2 days'
-    },
-    {
-      zone: 'Zone 4 - Other Areas',
-      areas: 'All other locations within Ghana',
-      standard: '4-5 days',
+      zone: 'Zone 3 - Other Areas',
+      areas: 'All other districts and towns across Ghana',
+      standard: '48 hours',
       express: 'Not available'
     }
   ];

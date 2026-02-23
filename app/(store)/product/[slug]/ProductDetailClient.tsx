@@ -632,10 +632,22 @@ export default function ProductDetailClient({ slug }: { slug: string }) {
                   )}
                 </div>
 
+                <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 mb-8 flex items-start gap-4">
+                  <div className="w-12 h-12 bg-blue-700 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i className="ri-truck-line text-2xl text-white"></i>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-1">Fast 24 - 48 Hours Delivery</h4>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      We offer reliable nationwide delivery across Ghana within 24 to 48 hours for all products.
+                    </p>
+                  </div>
+                </div>
+
                 <div className="border-t border-gray-200 pt-6 space-y-4">
                   <div className="flex items-center text-gray-700">
                     <i className="ri-store-2-line text-xl text-blue-700 mr-3"></i>
-                    <span>Free store pickup available</span>
+                    <span>Free store pickup available — Instant</span>
                   </div>
                   <div className="flex items-center text-gray-700">
                     <i className="ri-arrow-left-right-line text-xl text-blue-700 mr-3"></i>
